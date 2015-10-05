@@ -86,9 +86,7 @@ public class Taxi extends SimState{
 		passenger = new TaxiObject();
 		destination = new TaxiObject();
 		world = new World(this);
-		//agent = new QLearnerAgent(this, passenger);
-		//agent = new HRLAgent(this, passenger);
-		//agent = new HRLAgentNoAbstraction(this, passenger);
+		
 	}
 
 	public void start()
@@ -100,11 +98,8 @@ public class Taxi extends SimState{
 
 	private void initAgents() {
 		
-		//agent = new QLearnerAgent(this, passenger);
-		//agent = new MAXQZero(this, passenger);
-		//agent = new MAXQZeroAllStateUpdate(this, passenger);
-		//agent = new MAXQZeroAbstraction(this, passenger);
-		//agent = new MAXQZeroAbstractionAllStateUpdate(this, passenger);
+		agent = new QAgent(this, passenger);
+
 		initGame();
 		
 		agentStopper = schedule.scheduleRepeating(0, 0, agent);
@@ -119,25 +114,25 @@ public class Taxi extends SimState{
 		taxiField.clear();
 		
 		// reset the passenger's location and state
-		//int passengerIndex = random.nextInt(4);
-		int passengerIndex = 0;
+		int passengerIndex = random.nextInt(4);
+		//int passengerIndex = 0;
 		Point loc = World.locationMap.get(passengerIndex);
 		passenger.setLocation(loc.x, loc.y, taxiField);
 		passenger.state = World.LocState.values()[passengerIndex];
 		
 		// initial destination's location and state
-		//int destinationIndex = random.nextInt(4);
-		int destinationIndex = 3;
+		int destinationIndex = random.nextInt(4);
+		//int destinationIndex = 3;
 		loc = World.locationMap.get(destinationIndex);
 		destination.setLocation(loc.x, loc.y, taxiField);
 		destination.state = World.LocState.values()[destinationIndex];
 		
-//		int x = random.nextInt(4);
-//		int y = random.nextInt(4);
+		int x = random.nextInt(4);
+		int y = random.nextInt(4);
 		
 		// debug setting
-		int x = 0;
-		int y = 1;
+		//int x = 0;
+		//int y = 1;
 		agent.resetAgent(x, y, passenger.state, destination.state);
 
 	}
