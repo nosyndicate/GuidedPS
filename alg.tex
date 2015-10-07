@@ -32,17 +32,19 @@ Parameters:
 \[
 \begin{split}
 \gamma = 0.9 \leftarrow\ & \text{reward discount for infinite horizon }\\
-\tau = 0.9 \leftarrow\ & \text{demonstration signal discount for infinite horizon}
+\tau = 0.9 \leftarrow\ & \text{demonstration signal discount for infinite horizon}\\
+%\epsilon = 0 \leftarrow\ & \text{threshold for changing the priority of states}
 \end{split}
 \]
 Initially:
 \[\begin{split}
-Q(s,a) \leftarrow &\ 0 \text{ for all } s,a\\
 V(s) \leftarrow &\ 0 \text{ for all } s\\
 H(s) \leftarrow &\ 0 \text{ for all } s\\
+Q(s,a) \leftarrow &\ 0 \text{ for all } s,a\\
 N(s,a) \leftarrow &\ 0 \text{ for all } s,a\\
+R(s,a) \leftarrow &\ 0  \text{ for all } s,a\\
 N(s,a,s') \leftarrow &\ 0  \text{ for all } s,a,s'\\
-D \leftarrow &\ \{\langle s_0,a_0,d_0\rangle , \langle s_1,a_1,d_0\rangle , \ldots ,\langle s_n,a_n,d_n\rangle \}\\
+D \leftarrow &\ \{\langle s_0,a_0,d_0\rangle , \langle s_1,a_1,d_1\rangle , \ldots ,\langle s_n,a_n,d_n\rangle \}\\
 \text{RQueue} \leftarrow &\ \text{backup queue}\\
 \text{DQueue} \leftarrow &\ \text{demonstration signal passing queue}
 \end{split}\]
@@ -56,11 +58,12 @@ Repeat:\\
 
 \item The agent, in current state \(s\), performs action \(a\), receives reward \(r\), and transitions to new state \(s'\).
 
-\item Update the transition model \(T(s,a,s')\)
+\item Update the transition model \(T(s,a,s')\) and reward model \(R(s,a)\)
 \[
 \begin{split}
 N(s,a) \leftarrow &\ N(s,a) + 1\\
-N(s,a,s') \leftarrow &\ N(s,a,s') + 1
+N(s,a,s') \leftarrow &\ N(s,a,s') + 1\\
+R_{\text{sum}}(s,a) \leftarrow &\ R_{\text{sum}}(s,a) + r\\
 \end{split}
 \]
 
@@ -70,35 +73,53 @@ N(s,a,s') \leftarrow &\ N(s,a,s') + 1
 Q(s,a) \leftarrow &\ r + \gamma \Sigma_{s'}T(s,a,s')V(s')\\
 V_{\text{old}}(s) \leftarrow &\ V(s)\\
 V(s) \leftarrow &\ \max_{a'}Q(s,a')\\
-p_r \leftarrow &\ |V(s)-V_{\text{old}}(s)| * H(s)
+\Delta_r \leftarrow &\ |V(s)-V_{\text{old}}(s)| * e^{H(s)*(1-\tau)}
 \end{split}
 \]
 
-if state $s$ is on RQueue, set its priority to $p_r$; otherwise, add it with priority $p_r$
+if state $s$ is on RQueue, set its priority to $\Delta_r$; otherwise, add it with priority $\Delta_r$
 
 \item For a number of update cycles do\\
 remove the first state $\bar{s}'$ from RQueue\\
 for all $(\bar{s},\bar{a})$ pairs with $N(\bar{s},\bar{a},\bar{s}')>0$ do
 \[
 \begin{split}
-Q(\bar{s},\bar{a}) \leftarrow\ \\
+\hat{r} \leftarrow &\ R_{\text{sum}(s,a)}/N(s,a)\\
+Q(\bar{s},\bar{a}) \leftarrow &\ \hat{r} +  \gamma \Sigma_{\bar{s}'}T(\bar{s},\bar{a},\bar{s}')V(\bar{s}')\\
+V_{\text{old}}(\bar{s}) \leftarrow &\ V(\bar{s})\\
+V(\bar{s}) \leftarrow &\ \max_{\bar{a}'}Q(\bar{s},\bar{a}')\\
+\Delta_r \leftarrow &\ |V(\bar{s})-V_{\text{old}}(\bar{s})| * e^{H(\bar{s})*(1-\tau)}
 \end{split}
 \] 
+if state $\bar{s}$ is on RQueue, set its priority to $\Delta_r$; otherwise, add it with priority $\Delta_r$
 
-\item Do an one-step demonstration signal passing\\
+\item Do an one-step demonstration signal passing (\textcolor{red}{may want to switch order with step 5})\\
 \[
 \begin{split}
 H_{\text{old}}(s') \leftarrow\ & H(s')\\
 H(s') \leftarrow\ & \begin{cases}
-    e^d + \tau \Sigma_s T(s,a,s') H(s)& \text{if \(\langle s,a \rangle\) is in $D$}\\
+    d + \tau \Sigma_s T(s,a,s') H(s)& \text{if \(\langle s,a \rangle\) is in $D$}\\
     \tau \Sigma_s T(s,a,s') H(s)& \text{otherwise}
   \end{cases}\\
-  p_d \leftarrow\ & |H(s')-H_{\text{old}}(s')|
+  \Delta_d \leftarrow\ & |H(s')-H_{\text{old}}(s')|
   \end{split}
 \]
-if state $s$ is on DQueue, set its priority to $p_d$; otherwise, add it with priority $p_d$
 
+if state $s'$ is on DQueue, set its priority to $\Delta_d$; otherwise, add it with priority $\Delta_d$
 \item For a number of update cycles do\\
+remove the first state $\bar{s}$ from DQueue\\
+for all $(\bar{a},\bar{s}')$ pairs with $N(\bar{s},\bar{a},\bar{s}')>0$ do
+\[
+\begin{split}
+H_{\text{old}}(\bar{s}') \leftarrow\ & H(\bar{s}')\\
+H(\bar{s}') \leftarrow\ & \begin{cases}
+    d + \tau \Sigma_{\bar{s}} T(\bar{s},\bar{a},\bar{s}') H(\bar{s})& \text{if \(\langle \bar{s},\bar{a} \rangle\) is in $D$}\\
+    \tau \Sigma_{\bar{s}} T(\bar{s},\bar{a},\bar{s}') H(\bar{s})& \text{otherwise}
+  \end{cases}\\
+  \Delta_d \leftarrow\ & |H(\bar{s}')-H_{\text{old}}(\bar{s}')|
+  \end{split}
+\] 
+if state $\bar{s}$ is on DQueue, set its priority to $\Delta_d$; otherwise, add it with priority $\Delta_d$
 
 
 
