@@ -1,0 +1,109 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{mathpazo}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{comment}
+\usepackage{color}
+
+\newcommand*{\argmax}{\operatornamewithlimits{argmax}\limits}
+
+\begin{document}
+
+\begin{comment}
+
+Parameters:
+\[\begin{split}
+  \alpha = 0.1 \leftarrow\ & q(s,a)\ \text{learning rate}\\
+%  \beta = 0.1 \leftarrow\ & q(s,a,s')\ \text{learning rate}\\
+  \gamma = 0.9 \leftarrow\ & \text{discount for infinite horizon}\\
+  \tau = \alpha \leftarrow\ & \text{temperature diffusion coefficient}\\
+  \delta = 0.995 \leftarrow\ & \text{temperature decay coefficient}\\
+  \text{\it MaxTemp} = 50 \leftarrow\ &  \text{maximum temperature}\\
+  \text{\it MinTemp} = 2 \leftarrow\ &  \text{minimum temperature}\\
+  \theta \leftarrow\ & \text{lenience moderation factor}\\
+%  \omega = 1 \leftarrow\ & \text{action selection moderation factor}\\
+%  \upsilon = 1.0 \leftarrow\ & \text{temperature addition factor for lenience}\\
+ % \zeta = 1.0 \leftarrow\ & \text{temperature addition factor for boltzman selection}\\
+\end{split}\]
+
+\end{comment}
+Parameters:
+\[
+\begin{split}
+\gamma = 0.9 \leftarrow\ & \text{reward discount for infinite horizon }\\
+\tau = 0.9 \leftarrow\ & \text{demonstration signal discount for infinite horizon}
+\end{split}
+\]
+Initially:
+\[\begin{split}
+Q(s,a) \leftarrow &\ 0 \text{ for all } s,a\\
+V(s) \leftarrow &\ 0 \text{ for all } s\\
+H(s) \leftarrow &\ 0 \text{ for all } s\\
+N(s,a) \leftarrow &\ 0 \text{ for all } s,a\\
+N(s,a,s') \leftarrow &\ 0  \text{ for all } s,a,s'\\
+D \leftarrow &\ \{\langle s_0,a_0,d_0\rangle , \langle s_1,a_1,d_0\rangle , \ldots ,\langle s_n,a_n,d_n\rangle \}\\
+\text{RQueue} \leftarrow &\ \text{backup queue}\\
+\text{DQueue} \leftarrow &\ \text{demonstration signal passing queue}
+\end{split}\]
+
+Repeat:\\
+
+\begin{enumerate}
+
+\item Select action \(a\) using the current policy $\pi$\\
+\textcolor{red}{What do we want to use? $\epsilon$-greedy? What's the way that other PS paper using?}
+
+\item The agent, in current state \(s\), performs action \(a\), receives reward \(r\), and transitions to new state \(s'\).
+
+\item Update the transition model \(T(s,a,s')\)
+\[
+\begin{split}
+N(s,a) \leftarrow &\ N(s,a) + 1\\
+N(s,a,s') \leftarrow &\ N(s,a,s') + 1
+\end{split}
+\]
+
+\item Do an one-step backup (\textcolor{red}{we may want to use SMALL BACKUP instead of full backup, since it's more efficient in computation time})\\
+\[
+\begin{split}
+Q(s,a) \leftarrow &\ r + \gamma \Sigma_{s'}T(s,a,s')V(s')\\
+V_{\text{old}}(s) \leftarrow &\ V(s)\\
+V(s) \leftarrow &\ \max_{a'}Q(s,a')\\
+p_r \leftarrow &\ |V(s)-V_{\text{old}}(s)| * H(s)
+\end{split}
+\]
+
+if state $s$ is on RQueue, set its priority to $p_r$; otherwise, add it with priority $p_r$
+
+\item For a number of update cycles do\\
+remove the first state $\bar{s}'$ from RQueue\\
+for all $(\bar{s},\bar{a})$ pairs with $N(\bar{s},\bar{a},\bar{s}')>0$ do
+\[
+\begin{split}
+Q(\bar{s},\bar{a}) \leftarrow\ \\
+\end{split}
+\] 
+
+\item Do an one-step demonstration signal passing\\
+\[
+\begin{split}
+H_{\text{old}}(s') \leftarrow\ & H(s')\\
+H(s') \leftarrow\ & \begin{cases}
+    e^d + \tau \Sigma_s T(s,a,s') H(s)& \text{if \(\langle s,a \rangle\) is in $D$}\\
+    \tau \Sigma_s T(s,a,s') H(s)& \text{otherwise}
+  \end{cases}\\
+  p_d \leftarrow\ & |H(s')-H_{\text{old}}(s')|
+  \end{split}
+\]
+if state $s$ is on DQueue, set its priority to $p_d$; otherwise, add it with priority $p_d$
+
+\item For a number of update cycles do\\
+
+
+
+
+	
+\end{enumerate}
+
+\end{document}
