@@ -63,17 +63,17 @@ Repeat:\\
 \begin{split}
 N(s,a) \leftarrow &\ N(s,a) + 1\\
 N(s,a,s') \leftarrow &\ N(s,a,s') + 1\\
-R_{\text{sum}}(s,a) \leftarrow &\ R_{\text{sum}}(s,a) + r\\
+R(s,a) \leftarrow &\ R(s,a) + r\\
 \end{split}
 \]
 
-\item Do an one-step backup (\textcolor{red}{we may want to use SMALL BACKUP instead of full backup, since it's more efficient in computation time})\\
+\item Do a one-step backup (\textcolor{red}{we may want to use SMALL BACKUP instead of full backup, since it's more efficient in computation time})\\
 \[
 \begin{split}
 Q(s,a) \leftarrow &\ r + \gamma \Sigma_{s'}T(s,a,s')V(s')\\
 V_{\text{old}}(s) \leftarrow &\ V(s)\\
 V(s) \leftarrow &\ \max_{a'}Q(s,a')\\
-\Delta_r \leftarrow &\ |V(s)-V_{\text{old}}(s)| * e^{H(s)*(1-\tau)}
+\Delta_r \leftarrow &\ |V(s)-V_{\text{old}}(s)| \times \frac{2}{1+e^{-H(s)}}
 \end{split}
 \]
 
@@ -84,16 +84,16 @@ remove the first state $\bar{s}'$ from RQueue\\
 for all $(\bar{s},\bar{a})$ pairs with $N(\bar{s},\bar{a},\bar{s}')>0$ do
 \[
 \begin{split}
-\hat{r} \leftarrow &\ R_{\text{sum}(s,a)}/N(s,a)\\
+\hat{r} \leftarrow &\ R(s,a)/N(s,a)\\
 Q(\bar{s},\bar{a}) \leftarrow &\ \hat{r} +  \gamma \Sigma_{\bar{s}'}T(\bar{s},\bar{a},\bar{s}')V(\bar{s}')\\
 V_{\text{old}}(\bar{s}) \leftarrow &\ V(\bar{s})\\
 V(\bar{s}) \leftarrow &\ \max_{\bar{a}'}Q(\bar{s},\bar{a}')\\
-\Delta_r \leftarrow &\ |V(\bar{s})-V_{\text{old}}(\bar{s})| * e^{H(\bar{s})*(1-\tau)}
+\Delta_r \leftarrow &\ |V(\bar{s})-V_{\text{old}}(\bar{s})| \times \frac{2}{1+e^{-H(s)}}
 \end{split}
 \] 
 if state $\bar{s}$ is on RQueue, set its priority to $\Delta_r$; otherwise, add it with priority $\Delta_r$
 
-\item Do an one-step demonstration signal passing (\textcolor{red}{may want to switch order with step 5})\\
+\item Do a one-step demonstration signal passing (\textcolor{red}{may want to switch order with step 5})\\
 \[
 \begin{split}
 H_{\text{old}}(s') \leftarrow\ & H(s')\\
