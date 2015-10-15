@@ -1,4 +1,4 @@
-package sim.app.guidedps.taxi;
+package sim.app.guidedps.taxi.agents;
 
 
 
@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import sim.app.guidedps.taxi.State;
+import sim.app.guidedps.taxi.Taxi;
+import sim.app.guidedps.taxi.TaxiAgent;
+import sim.app.guidedps.taxi.TaxiObject;
+import sim.app.guidedps.taxi.World;
 import sim.app.guidedps.taxi.World.LocState;
 import sim.app.guidedps.taxi.State.Action;
 import sim.app.guidedps.util.Utils;
@@ -18,7 +23,7 @@ public class QAgent extends TaxiAgent{
 
 	
 	
-	private HashMap<State, ArrayList<Double>> qTable;
+	private double[][] qValue;
 	private double alpha = 0.1;
 	private double temperature = 50;
 	private double delta = 0.9879;
@@ -47,19 +52,21 @@ public class QAgent extends TaxiAgent{
 		if(model.isTraining())
 		{
 			int actionIndex = this.action.ordinal();
-			double val = qTable.get(s).get(actionIndex);
+			int stateIndex = model.stateMap.get(s);
+			double val = qValue[stateIndex][actionIndex];
 			
 			//System.out.println("old value is " + val);
 			
 			// update the q value
 			double newVal = Double.NEGATIVE_INFINITY;
+			int sprimeIndex = model.stateMap.get(sprime);
 			if(model.world.isEndGame())
 				newVal = (1-alpha)*val+alpha*reward;
 			else {
-				newVal = (1-alpha)*val+alpha*(reward+gamma*maxQ(qTable.get(sprime)));
+				newVal = (1-alpha)*val+alpha*(reward+gamma*maxQ(sprimeIndex));
 			}
 			
-			qTable.get(s).set(actionIndex, newVal);
+			qValue[stateIndex][actionIndex] = newVal;
 		}
 		
 		// move to the new state
@@ -87,7 +94,7 @@ public class QAgent extends TaxiAgent{
 		if(model.isTraining())
 			counter++;
 		
-		qLearning();
+		learning();
 		
 		// if one episode is ended, we start a new one
 		if(model.world.isEndGame()) {
@@ -111,8 +118,8 @@ public class QAgent extends TaxiAgent{
 		
 	}
 	
-	
-	private void qLearning() {
+	@Override
+	public void learning() {
 		// action selection
 		this.action = ActionSelection();
 
@@ -133,53 +140,36 @@ public class QAgent extends TaxiAgent{
 
 	}
 
-	private double maxQ(ArrayList<Double> arrayList) {
-		double max = Double.NEGATIVE_INFINITY;
-		for(int i = 0;i<arrayList.size();++i)
-		{
-			double val = arrayList.get(i);
-			max = Math.max(max, val);
-		}
-		return max;
-	}
+	
 
 
 	private Action ActionSelection() {
+		int stateIndex = model.stateMap.get(s);
 		
 		if(!model.isTraining())
 		{
-			return Action.values()[Utils.bestAction(model.random, qTable.get(s))];
+			return Action.values()[Utils.bestAction(model.random, qValue[stateIndex])];
 		}
 		else {
 			//return Action.values()[Utils.boltzmannSelection(model.random, temperature, qTable.get(s))];
-			return Action.values()[Utils.epsilonGreedy(model.random, epsilon, qTable.get(s))];
+			return Action.values()[Utils.epsilonGreedy(model.random, epsilon, qValue[stateIndex])];
 		}
 
 	}
 	
+	private double maxQ(int s) {
+		double max = Double.NEGATIVE_INFINITY;
+		for(int i = 0;i<model.getNumAction();++i) {
+			max = Math.max(qValue[s][i],max);
+		}
+		return max;
+	}
 	
-
-
-	private void initializeQTable()
-	{
-		qTable = new HashMap<State, ArrayList<Double>>();
-		for(int x = 0;x<5;++x)
-		{
-			for(int y = 0;y<5;++y)
-			{
-				for(int d = 0;d<4;++d) // des is available in the range 0 to 3
-				{
-					for(int p = 0;p<5;++p) // p is available in the range 0 to 4
-					{
-						// initialize the action table for state
-						ArrayList<Double> temp = new ArrayList<Double>();
-						for(int i = 0;i<Action.values().length;++i)
-						{
-							temp.add(initQ);
-						}
-						qTable.put(new State(x, y, LocState.values()[d], LocState.values()[p]), temp);
-					}
-				}
+	private void initializeQTable() {
+		this.qValue = new double[model.getNumState()][model.getNumAction()];
+		for(int i = 0;i<qValue.length;++i) {
+			for(int j = 0;j<model.getNumAction();++j) {
+				qValue[i][j] = initQ;
 			}
 		}
 	}
@@ -190,7 +180,6 @@ public class QAgent extends TaxiAgent{
 		s = new State(x, y, passengerState, desState);
 		this.setPickUp(false);
 		this.setLocation(x, y, model.taxiField);
-		
 	}
 
 	

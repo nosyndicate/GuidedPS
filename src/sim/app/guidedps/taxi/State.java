@@ -59,6 +59,7 @@ public class State {
 		return true;
 	}
 	
+	
 	@Override
 	public int hashCode() {
 		int i = x;

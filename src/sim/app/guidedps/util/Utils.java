@@ -14,6 +14,15 @@ public class Utils {
 			return bestAction(random, actionList);
 		}
 	}
+	
+	public static int epsilonGreedy(MersenneTwisterFast random, double epsilon,
+			double[] actionArray) {
+		if (random.nextDouble() < epsilon) {
+			return random.nextInt(actionArray.length);
+		} else {
+			return bestAction(random, actionArray);
+		}
+	}
 
 	public static int orderedEpsilonGreedy(MersenneTwisterFast random,
 			double epsilon, ArrayList<Double> actionList) {
@@ -24,6 +33,38 @@ public class Utils {
 		}
 	}
 
+	
+
+	public static int orderedBestAction(ArrayList<Double> actionList) {
+		ArrayList<Integer> pool = bestActionsPool(actionList);
+
+		// alway return the first one
+		return pool.get(0);
+	}
+
+	public static int bestAction(MersenneTwisterFast random,
+			ArrayList<Double> actionList) {
+		ArrayList<Integer> pool = bestActionsPool(actionList);
+
+		// choose randomly from the pool
+		int randomChoosen = random.nextInt(pool.size());
+		int index = pool.get(randomChoosen);
+
+		// return a index from the pool, break tie randomly
+		return index;
+	}
+	
+	public static int bestAction(MersenneTwisterFast random, double[] actionArray) {
+		ArrayList<Integer> pool = bestActionsPool(actionArray);
+
+		// choose randomly from the pool
+		int randomChoosen = random.nextInt(pool.size());
+		int index = pool.get(randomChoosen);
+
+		// return a index from the pool, break tie randomly
+		return index;
+	}
+	
 	private static ArrayList<Integer> bestActionsPool(
 			ArrayList<Double> actionList) {
 		ArrayList<Integer> pool = new ArrayList<Integer>();
@@ -44,25 +85,28 @@ public class Utils {
 
 		return pool;
 	}
+	
+	private static ArrayList<Integer> bestActionsPool(double[] actionArray) {
+		ArrayList<Integer> pool = new ArrayList<Integer>();
+		double max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < actionArray.length; ++i) {
+			double v = actionArray[i];
+			if (max < v) // new max value, clear the pool
+			{
+				max = v;
+				pool.clear();
+			}
 
-	public static int orderedBestAction(ArrayList<Double> actionList) {
-		ArrayList<Integer> pool = bestActionsPool(actionList);
+			if (max == v) // add the index to the pool
+			{
+				pool.add(i);
+			}
+		}
 
-		// alway return the first one
-		return pool.get(0);
+		return pool;
 	}
 
-	public static int bestAction(MersenneTwisterFast random,
-			ArrayList<Double> actionList) {
-		ArrayList<Integer> pool = bestActionsPool(actionList);
-
-		// choose randomly from the pool
-		int randomChoosen = random.nextInt(pool.size());
-		int index = pool.get(randomChoosen);
-
-		// return a index from the pool, break tie randomly
-		return index;
-	}
+	
 
 	public static int boltzmannSelection(MersenneTwisterFast random,
 			double temperature, ArrayList<Double> actionList) {

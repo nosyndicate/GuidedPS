@@ -3,11 +3,17 @@ package sim.app.guidedps.taxi;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import sim.engine.SimState;
 import sim.engine.Stoppable;
 import sim.field.grid.ObjectGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.app.guidedps.taxi.World;
+import sim.app.guidedps.taxi.State.Action;
+import sim.app.guidedps.taxi.World.LocState;
+import sim.app.guidedps.taxi.agents.QAgent;
 
 public class Taxi extends SimState{
 
@@ -17,6 +23,8 @@ public class Taxi extends SimState{
 	public static final int width = 5;
 	public SparseGrid2D taxiField = new SparseGrid2D(width, height);
 	public ObjectGrid2D backgroundField = new ObjectGrid2D(width, height);
+	public ArrayList<State> stateList = new ArrayList<State>();
+	public HashMap<State, Integer> stateMap = new HashMap<State,Integer>();
 	
 	public int stepBounds = 10000000;
 	public Stoppable agentStopper;
@@ -31,6 +39,8 @@ public class Taxi extends SimState{
 	public int gameEndIteratioin = 0;
 
 	private boolean verbose = true;
+	private int numState;
+	private int numAction;
 	
 	public int getGameTime()
 	{
@@ -87,6 +97,9 @@ public class Taxi extends SimState{
 		destination = new TaxiObject();
 		world = new World(this);
 		
+		this.constructStateList();
+		this.numAction = State.Action.values().length;
+		
 	}
 
 	public void start()
@@ -137,6 +150,26 @@ public class Taxi extends SimState{
 
 	}
 	
+	public void constructStateList() {
+		int counter = 0;
+		for(int x = 0;x<5;++x)
+		{
+			for(int y = 0;y<5;++y)
+			{
+				for(int d = 0;d<4;++d) // des is available in the range 0 to 3
+				{
+					for(int p = 0;p<5;++p) // p is available in the range 0 to 4
+					{
+						State state = new State(x, y, d, p);
+						stateList.add(state);
+						stateMap.put(state, counter++);
+					}
+				}
+			}
+		}
+		this.numState = stateList.size(); // we have a terminal state
+		
+	}
 	
 	public static void main(String[] args)
 	{
@@ -151,6 +184,14 @@ public class Taxi extends SimState{
 	public void setVerbose(boolean val)
 	{
 		this.verbose = val;
+	}
+	
+	public int getNumState() {
+		return this.numState;
+	}
+	
+	public int getNumAction() {
+		return this.numAction;
 	}
 	
 	
