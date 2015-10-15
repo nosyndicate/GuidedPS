@@ -1,8 +1,5 @@
 package sim.app.guidedps.taxi.agents;
 
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-
 import sim.app.guidedps.taxi.State.Action;
 import sim.app.guidedps.taxi.State;
 import sim.app.guidedps.taxi.Taxi;
@@ -27,8 +24,9 @@ public class PrioritizedSweeping extends TaxiAgent {
 	private int numState;
 	private double gamma = 0.9;
 	private double epsilon = 0.1;
-	private double theta = 0; // threshold for putting tuple into the queue
+	private double theta = 0.05; // threshold for putting tuple into the queue
 	private State s;
+	private int p = 3;
 
 	public PrioritizedSweeping(Taxi model, TaxiObject passenger) {
 		super(model, passenger);
@@ -91,6 +89,11 @@ public class PrioritizedSweeping extends TaxiAgent {
 		State sprime = new State(x, y, model.destination.state, model.passenger.state);
 		reward = model.world.getReward();
 		
+		if(reward==19)
+		{
+			System.out.println("success");
+		}
+		
 		int stateIndex = model.stateMap.get(s);
 		int sprimeIndex = model.stateMap.get(sprime);
 		if(model.world.isEndGame())
@@ -102,9 +105,19 @@ public class PrioritizedSweeping extends TaxiAgent {
 		// only update the Q value in training mode
 		if(model.isTraining())
 		{
-			this.updateModel(stateIndex, actionIndex, sprimeIndex);
-			this.valueBackup(stateIndex, actionIndex, sprimeIndex, reward);
-			this.prioritizedSweeping();
+			try {
+				this.updateModel(stateIndex, actionIndex, sprimeIndex, reward);
+				this.valueBackup(stateIndex, actionIndex, sprimeIndex, reward);
+				
+				int counter = 0;
+				while(counter<p&&!queue.isEmpty())
+				{
+					this.prioritizedSweeping();
+					counter++;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		// move to the new state
@@ -150,16 +163,16 @@ public class PrioritizedSweeping extends TaxiAgent {
 	}
 	
 	
-	public void updateModel(int s, int a, int sprime) {
+	public void updateModel(int s, int a, int sprime, double reward) {
 		stateActionCounter[s][a]++;
 		sASCounter[s][a][sprime]++;
-		rewardSum[s][a]++;
+		rewardSum[s][a]+=reward;
 	}
 	
 	public void valueBackup(int s, int a, int sprime, double r) {
 		try {
 			double sum = 0;
-			for (int i = 0; i < numState; ++i) {
+			for (int i = 0; i < numState+1; ++i) {
 				if (sASCounter[s][a][i] > 0) {
 					sum += (sASCounter[s][a][i] * stateValue[i]);
 				}
@@ -181,7 +194,7 @@ public class PrioritizedSweeping extends TaxiAgent {
 	private void prioritizedSweeping() {
 		int s = firstOfQueue();
 		
-		for(int i = 0;i<numState;++i) {
+		for(int i = 0;i<numState+1;++i) {
 			for(int j = 0;j<numAction;++j) {
 				if(sASCounter[i][j][s] > 0) {
 					double rewardEstimation = rewardSum[i][j]/stateActionCounter[i][j];

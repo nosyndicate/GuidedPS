@@ -2,7 +2,7 @@ package sim.app.guidedps.taxi.agents;
 
 
 
-public class PriorityTuple {
+public class PriorityTuple implements Comparable{
 	int stateIndex;
 	double priority;
 	
@@ -24,5 +24,18 @@ public class PriorityTuple {
 	public int hashCode() {
 		return this.stateIndex*1000;
 	}
+
+	@Override
+	public int compareTo(Object o) {
+		PriorityTuple that = (PriorityTuple)o;
+		if(that.priority < this.priority)
+			return -1;
+		else if(that.priority > this.priority)
+			return 1;
+		else 
+			return 0;
+	}
+	
+	
 	
 }

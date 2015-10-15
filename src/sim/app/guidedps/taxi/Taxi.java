@@ -13,6 +13,7 @@ import sim.field.grid.SparseGrid2D;
 import sim.app.guidedps.taxi.World;
 import sim.app.guidedps.taxi.State.Action;
 import sim.app.guidedps.taxi.World.LocState;
+import sim.app.guidedps.taxi.agents.PrioritizedSweeping;
 import sim.app.guidedps.taxi.agents.QAgent;
 
 public class Taxi extends SimState{
@@ -111,8 +112,8 @@ public class Taxi extends SimState{
 
 	private void initAgents() {
 		
-		agent = new QAgent(this, passenger);
-
+		//agent = new QAgent(this, passenger);
+		agent = new PrioritizedSweeping(this, passenger);
 		initGame();
 		
 		agentStopper = schedule.scheduleRepeating(0, 0, agent);
