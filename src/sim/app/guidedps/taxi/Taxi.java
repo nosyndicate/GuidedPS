@@ -1,89 +1,35 @@
 package sim.app.guidedps.taxi;
 
 
+import sim.app.guidedps.gridworld.State;
+import sim.app.guidedps.gridworld.Block;
 import java.awt.Color;
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
+import sim.app.guidedps.gridworld.GridModel;
+import sim.app.guidedps.gridworld.GridObject;
 
-import sim.engine.SimState;
-import sim.engine.Stoppable;
+import sim.app.guidedps.taxi.agents.PrioritizedSweeping;
 import sim.field.grid.ObjectGrid2D;
 import sim.field.grid.SparseGrid2D;
-import sim.app.guidedps.taxi.World;
-import sim.app.guidedps.taxi.State.Action;
-import sim.app.guidedps.taxi.World.LocState;
-import sim.app.guidedps.taxi.agents.PrioritizedSweeping;
-import sim.app.guidedps.taxi.agents.QAgent;
 
-public class Taxi extends SimState{
+public class Taxi extends GridModel{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int height = 5;
-	public static final int width = 5;
-	public SparseGrid2D taxiField = new SparseGrid2D(width, height);
-	public ObjectGrid2D backgroundField = new ObjectGrid2D(width, height);
-	public ArrayList<State> stateList = new ArrayList<State>();
-	public HashMap<State, Integer> stateMap = new HashMap<State,Integer>();
-	
-	public int stepBounds = 10000000;
-	public Stoppable agentStopper;
-	public World world;
+	public final int height = 5;
+	public final int width = 5;
+
 	public TaxiAgent agent;
-	public TaxiObject passenger;
-	public TaxiObject destination;
+	public GridObject passenger;
+	public GridObject destination;
 	
-	private boolean training = true;
-	private int gameTime = 0;
-	public int gameStartIteration = 0;
-	public int gameEndIteratioin = 0;
-
-	private boolean verbose = true;
-	private int numState;
-	private int numAction;
-	private boolean stochastic = true;
-	
-	public int getGameTime()
-	{
-		return gameTime;
-	}
-	
-	public int getGameIterations()
-	{
-		return gameEndIteratioin - gameStartIteration;
-	}
-	
-	
-	public boolean isTraining() {
-		return training;
-	}
-
-	public void setTraining(boolean training) {
-		this.training = training;
-	}
-	
-	public boolean isStochastic() {
-		return stochastic;
-	}
-	
-	public void setStochastic(boolean value) {
-		this.stochastic = value;
-	}
-
-	public int getStepBounds()
-	{
-		return stepBounds;
-	}
-	
-	public void setStepBounds(int val)
-	{
-		this.stepBounds = val;
-	}
 	
 	public Taxi(long seed) {
 		super(seed);
 	
+                gridField = new SparseGrid2D(width, height);
+                backgroundField = new ObjectGrid2D(width, height);
+                
 		// setup the background
 		
 		backgroundField.set(0, 0, new Block(Color.red, new int[]{0,0,0,0}));
@@ -103,26 +49,22 @@ public class Taxi extends SimState{
 		
 		
 		
-		passenger = new TaxiObject();
-		destination = new TaxiObject();
+		passenger = new GridObject();
+		destination = new GridObject();
 		world = new World(this);
 		
 		this.constructStateList();
 		this.numAction = State.Action.values().length;
-		
-	}
-
-	public void start()
-	{
-		super.start();
 		initAgents();
 	}
+
 	
 
-	private void initAgents() {
+        @Override
+	protected final void initAgents() {
 		
 		//agent = new QAgent(this, passenger);
-		agent = new PrioritizedSweeping(this, passenger);
+		agent = new TaxiAgent(this, passenger, new PrioritizedSweeping(this));
 		initGame();
 		
 		agentStopper = schedule.scheduleRepeating(0, 0, agent);
@@ -130,29 +72,29 @@ public class Taxi extends SimState{
 	}
 	
 	
-	public void initGame()
+        @Override
+	public final void initGame()
 	{
 		gameTime++;
 		
-		taxiField.clear();
+		gridField.clear();
 		
 		// reset the passenger's location and state
 		int passengerIndex = random.nextInt(4);
 		//int passengerIndex = 0;
 		Point loc = World.locationMap.get(passengerIndex);
-		passenger.setLocation(loc.x, loc.y, taxiField);
+		passenger.setLocation(loc.x, loc.y, gridField);
 		passenger.state = World.LocState.values()[passengerIndex];
 		
 		// initial destination's location and state
 		int destinationIndex = random.nextInt(4);
 		//int destinationIndex = 3;
 		loc = World.locationMap.get(destinationIndex);
-		destination.setLocation(loc.x, loc.y, taxiField);
+		destination.setLocation(loc.x, loc.y, gridField);
 		destination.state = World.LocState.values()[destinationIndex];
 		
 		int x = random.nextInt(4);
 		int y = random.nextInt(4);
-		
 		// debug setting
 		//int x = 0;
 		//int y = 1;
@@ -160,7 +102,7 @@ public class Taxi extends SimState{
 
 	}
 	
-	public void constructStateList() {
+	private void constructStateList() {
 		int counter = 0;
 		for(int x = 0;x<5;++x)
 		{
@@ -180,7 +122,12 @@ public class Taxi extends SimState{
 		this.numState = stateList.size(); // we have a terminal state
 		
 	}
-	
+        
+	public State getCurrentState()
+        {
+            return new State(agent.getLocation().x, agent.getLocation().y, destination.state, passenger.state);
+        }
+        
 	public static void main(String[] args)
 	{
 		doLoop(Taxi.class, args);

@@ -1,79 +1,42 @@
 package sim.app.guidedps.taxi;
 
 import java.awt.Point;
+import sim.app.guidedps.gridworld.GridAgent;
+import sim.app.guidedps.gridworld.GridModel;
+import sim.app.guidedps.gridworld.GridObject;
+import sim.app.guidedps.gridworld.State;
 
-import sim.app.guidedps.taxi.State.Action;
+import sim.app.guidedps.gridworld.State.Action;
 import sim.app.guidedps.taxi.World.LocState;
+import sim.app.guidedps.taxi.agents.LearningAgent;
 import sim.engine.Steppable;
 import sim.field.grid.SparseGrid2D;
 
-public abstract class TaxiAgent implements Steppable{
+public class TaxiAgent extends GridAgent{
 
 	private static final long serialVersionUID = 1L;
-	protected int x;
-	protected int y;
-	protected boolean pickup;
-	protected Taxi model;
-	protected TaxiObject passenger;
-	protected Action action;
-	protected double reward;
-	protected int counter;
-
-	
-	public String desAction()
-	{
-		return "This is the action taken last step";
-	}
-	
-	
-	public Action getAction()
-	{
-		return action;
-	}
-	
-	public abstract void resetAgent(int x, int y, LocState passengerState, LocState desState);
-	
-	
-	public String desReward()
-	{
-		return "This is the reward received last step";
-	}
-	
-	public double getReward()
-	{
-		return this.reward;
-	}
-	
+	protected GridObject passenger;
 	
 
-	public TaxiAgent(Taxi model, TaxiObject passenger)
+	public TaxiAgent(GridModel model, GridObject passenger, LearningAgent agent)
 	{
 		this.model = model;
 		this.passenger = passenger;
 		this.counter = 0;
+                this.agent = agent;
 	}
-
-	
-	public void setLocation(int x, int y, SparseGrid2D field)
+        
+        public void setLocation(int x, int y, SparseGrid2D field)
 	{
-		this.x = x;
-		this.y = y;
-		field.setObjectLocation(this,x,y);
-		
+		super.setLocation(x,y,field);
 		// if taxi pick the player, we take it with the taxi
 		if(pickup)
 		{
 			passenger.setLocation(x, y, field);
 		}
 	}
-	
-	public Point getLocation()
-	{
-		return new Point(x, y);
-	}
-	
-	
-	public void setPickUp(boolean val)
+        
+        public void setPickUp(boolean val)
 	{
 		this.pickup = val;
 	}
@@ -83,12 +46,12 @@ public abstract class TaxiAgent implements Steppable{
 		return this.pickup;
 	}
 
-
-	public void learning() {
-		
+        @Override
+	public void resetAgent(int x, int y, LocState passengerState,
+			LocState desState) {
+		agent.setState(new State(x, y, passengerState, desState));
+		this.setPickUp(false);
+		this.setLocation(x, y, model.gridField);
 	}
-
-	
-	
 
 }

@@ -2,6 +2,7 @@ package sim.app.guidedps.taxi;
 
 
 
+import sim.app.guidedps.gridworld.BlockPortrayal;
 import java.awt.Color;
 import javax.swing.JFrame;
 import sim.display.Console;
@@ -68,7 +69,7 @@ public class TaxiWithUI extends GUIState{
 	
 	private SparseGridPortrayal2D getTaxiFieldPortrayal() {
 		SparseGridPortrayal2D portrayal = new SparseGridPortrayal2D();
-		portrayal.setField(model.taxiField);
+		portrayal.setField(model.gridField);
 		return portrayal;
 	}
 	
