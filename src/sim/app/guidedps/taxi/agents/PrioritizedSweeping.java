@@ -65,7 +65,7 @@ public class PrioritizedSweeping implements LearningAgent {
 		}
 		
 		// move to the new state
-		s = sprime;
+		setState(sprime);
 		
 	}
 

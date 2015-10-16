@@ -98,8 +98,8 @@ if state $\bar{s}$ is on RQueue, set its priority to $\Delta_r$; otherwise, add 
 \begin{split}
 H_{\text{old}}(s') \leftarrow\ & H(s')\\
 H(s') \leftarrow\ & \begin{cases}
-    \max_a (d + \tau \Sigma_s T(s,a,s') H(s))& \text{if \(\langle s,a \rangle\) is in $D$}\\
-    \max_a (\tau \Sigma_s T(s,a,s') H(s))& \text{otherwise}
+    \max_{s,a} (d + \tau T(s,a,s') H(s))& \text{if \(\langle s,a \rangle\) is in $D$}\\
+    \max_{s,a} (\tau T(s,a,s') H(s))& \text{otherwise}
   \end{cases}\\
   \Delta_d \leftarrow\ & |H(s')-H_{\text{old}}(s')|
   \end{split}
@@ -113,8 +113,8 @@ for all $(\bar{a},\bar{s}')$ pairs with $N(\bar{s},\bar{a},\bar{s}')>0$ do
 \begin{split}
 H_{\text{old}}(\bar{s}') \leftarrow\ & H(\bar{s}')\\
 H(\bar{s}') \leftarrow\ & \begin{cases}
-    \max_{\bar{a}} (d + \tau \Sigma_{\bar{s}} T(\bar{s},\bar{a},\bar{s}') H(\bar{s})& \text{if \(\langle \bar{s},\bar{a} \rangle\) is in $D$}\\
-    \max_{\bar{a}} \tau \Sigma_{\bar{s}} T(\bar{s},\bar{a},\bar{s}') H(\bar{s})& \text{otherwise}
+    \max_{\bar{s},\bar{a}} (d + \tau  T(\bar{s},\bar{a},\bar{s}') H(\bar{s})& \text{if \(\langle \bar{s},\bar{a} \rangle\) is in $D$}\\
+    \max_{\bar{s},\bar{a}} \tau  T(\bar{s},\bar{a},\bar{s}') H(\bar{s})& \text{otherwise}
   \end{cases}\\
   \Delta_d \leftarrow\ & |H(\bar{s}')-H_{\text{old}}(\bar{s}')|
   \end{split}

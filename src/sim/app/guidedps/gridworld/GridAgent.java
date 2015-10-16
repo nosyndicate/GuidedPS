@@ -74,10 +74,6 @@ public abstract class GridAgent implements Steppable{
 			agent.updatePolicy();
 
 	}
-        
-        
-        
-        
 	
 	public String desAction()
 	{
@@ -90,11 +86,6 @@ public abstract class GridAgent implements Steppable{
 		return action;
 	}
 	
-	
-	
-	
-	
-
 	
 	public void setLocation(int x, int y, SparseGrid2D field)
 	{
