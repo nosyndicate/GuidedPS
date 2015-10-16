@@ -59,8 +59,8 @@ public class MazeWorld extends Environment{
         */
         
         Point oldLoc = model.agent.getLocation();
-        action.NORTH
-        if ()
+        // set the new location and then check if it matches a wall
+        // if it does then move it back to the old location.
         
         
         
