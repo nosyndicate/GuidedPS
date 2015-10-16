@@ -1,4 +1,4 @@
-package sim.app.guidedps.taxi;
+package sim.app.guidedps.gridworld;
 
 
 
@@ -8,18 +8,18 @@ import java.awt.Point;
 import sim.app.guidedps.taxi.World.LocState;
 import sim.field.grid.SparseGrid2D;
 
-public class TaxiObject
+public class GridObject
 {
 	public int x;
 	public int y;
 	public LocState state;
 	
-	public TaxiObject()
+	public GridObject()
 	{
 		
 	}
 	
-	public TaxiObject(int x, int y, SparseGrid2D field)
+	public GridObject(int x, int y, SparseGrid2D field)
 	{
 		setLocation(x, y, field);
 	}

@@ -1,4 +1,4 @@
-package sim.app.guidedps.taxi;
+package sim.app.guidedps.gridworld;
 
 
 public abstract class Environment{

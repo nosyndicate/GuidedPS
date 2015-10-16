@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
-import sim.app.guidedps.taxi.State.Action;
+import sim.app.guidedps.gridworld.Environment;
+import sim.app.guidedps.gridworld.State.Action;
+import sim.app.guidedps.taxi.Taxi;
 
 
 public class World extends Environment {
@@ -143,22 +145,22 @@ public class World extends Environment {
 			{
 				if(agentLoc.y-1>=0) // legal movement
 				{
-					model.agent.setLocation(agentLoc.x, agentLoc.y-1, model.taxiField);;
+					model.agent.setLocation(agentLoc.x, agentLoc.y-1, model.gridField);;
 				}
 			}else if (action==Action.SOUTH) {
 				if(agentLoc.y+1<Taxi.height) // legal movement
 				{
-					model.agent.setLocation(agentLoc.x, agentLoc.y+1, model.taxiField);;
+					model.agent.setLocation(agentLoc.x, agentLoc.y+1, model.gridField);;
 				}
 			}else if (action==Action.EAST) {
 				if(agentLoc.x+1<Taxi.width) // legal movement
 				{
-					model.agent.setLocation(agentLoc.x+1, agentLoc.y, model.taxiField);;
+					model.agent.setLocation(agentLoc.x+1, agentLoc.y, model.gridField);;
 				}
 			}else if (action==Action.WEST) {
 				if(agentLoc.x-1>=0) // legal movement
 				{
-					model.agent.setLocation(agentLoc.x-1, agentLoc.y, model.taxiField);;
+					model.agent.setLocation(agentLoc.x-1, agentLoc.y, model.gridField);;
 				}
 			}
 			return regular;

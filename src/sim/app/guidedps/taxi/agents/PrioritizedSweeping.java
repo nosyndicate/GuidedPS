@@ -1,16 +1,12 @@
 package sim.app.guidedps.taxi.agents;
 
-import sim.app.guidedps.taxi.State.Action;
-import sim.app.guidedps.taxi.State;
-import sim.app.guidedps.taxi.Taxi;
-import sim.app.guidedps.taxi.TaxiAgent;
-import sim.app.guidedps.taxi.TaxiObject;
-import sim.app.guidedps.taxi.World.LocState;
+import sim.app.guidedps.gridworld.GridModel;
+import sim.app.guidedps.gridworld.State.Action;
+import sim.app.guidedps.gridworld.State;
 import sim.app.guidedps.util.RelaxablePriorityQueue;
 import sim.app.guidedps.util.Utils;
-import sim.engine.SimState;
 
-public class PrioritizedSweeping extends TaxiAgent {
+public class PrioritizedSweeping implements LearningAgent {
 
 	
 	private static final long serialVersionUID = 1L;
@@ -27,66 +23,19 @@ public class PrioritizedSweeping extends TaxiAgent {
 	private double theta = 0.05; // threshold for putting tuple into the queue
 	private State s;
 	private int p = 3;
+        private GridModel model;
+        private double reward;
+        private Action action;
 
-	public PrioritizedSweeping(Taxi model, TaxiObject passenger) {
-		super(model, passenger);
+	public PrioritizedSweeping(GridModel model) {
+		this.model = model;
 		initialization();
 	}
 
-	@Override
-	public void step(SimState state) {
-		if(model.isTraining())
-			counter++;
-		
-		
-		learning();
-		
-		// if one episode is ended, we start a new one
-		if(model.world.isEndGame()) {
-			model.gameStartIteration = model.gameEndIteratioin;
-			model.gameEndIteratioin = counter;
-			model.initGame();
-			model.world.setEndGame(false);
-		}
-				
-				
-		// run out of iteration, stop the agent and world, reset the counter
-		if (counter >= model.stepBounds) {
-			model.agentStopper.stop();
-
-			counter = 0;
-			System.out.println("==========================");
-			System.out.println("end of the training period");
-			System.out.println("==========================");
-			return;
-		}
-		
-	}
 	
-	@Override
-	public void learning() {
-		// action selection
-		this.action = ActionSelection();
 
-		// print out the state
-		// System.out.println("state:");
-		// System.out.println("the position of taxi:("+x+","+y+")");
-		// System.out.println("the state of passenger:"+passenger.state);
-		// System.out.println("the state of destination:"+model.destination.state);
-		// System.out.println(qTableForState(qTable.get(s)));
-		// System.out.println("action is "+ this.action);
-
-		// update the world, determine s' and reward
-		model.world.update();
-
-		// update the policy
-		if (model.isTraining())
-			updatePolicy();
-
-	}
-
-	private void updatePolicy() {
-		State sprime = new State(x, y, model.destination.state, model.passenger.state);
+	public void updatePolicy() {
+		State sprime = model.getCurrentState();
 		reward = model.world.getReward();
 		
 		if(reward==19)
@@ -99,7 +48,7 @@ public class PrioritizedSweeping extends TaxiAgent {
 		if(model.world.isEndGame())
 			sprimeIndex = model.getNumState(); // into terminal state
 		
-		int actionIndex = this.action.ordinal();
+		int actionIndex = action.ordinal();
 		
 		
 		// only update the Q value in training mode
@@ -125,29 +74,26 @@ public class PrioritizedSweeping extends TaxiAgent {
 		
 	}
 
-	private Action ActionSelection() {
+	public Action ActionSelection() {
 		int stateIndex = model.stateMap.get(this.s);
 		
 		if(!model.isTraining())
 		{
-			return Action.values()[Utils.bestAction(model.random, qValue[stateIndex])];
+			action = Action.values()[Utils.bestAction(model.random, qValue[stateIndex])];
 		}
 		else {
-			return Action.values()[Utils.epsilonGreedy(model.random, epsilon, qValue[stateIndex])];
+			action = Action.values()[Utils.epsilonGreedy(model.random, epsilon, qValue[stateIndex])];
 		}
-
+                return action;
 	}
 
-	@Override
-	public void resetAgent(int x, int y, LocState passengerState,
-			LocState desState) {
-		s = new State(x, y, passengerState, desState);
-		this.setPickUp(false);
-		this.setLocation(x, y, model.taxiField);
-		
-	}
+        public void setState(State state) {
+            s = state;
+        }
+        
 	
-	public void initialization() {
+	
+	private void initialization() {
 		this.numState = model.getNumState();
 		this.numAction = model.getNumAction();
 		// N(s,a)

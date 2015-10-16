@@ -1,4 +1,4 @@
-package sim.app.guidedps.taxi;
+package sim.app.guidedps.gridworld;
 
 import sim.app.guidedps.taxi.World.LocState;
 
