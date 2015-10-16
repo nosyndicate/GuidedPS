@@ -6,7 +6,8 @@
 package sim.app.guidedps.maze;
 
 import sim.app.guidedps.gridworld.GridAgent;
-import sim.app.guidedps.taxi.World;
+import sim.app.guidedps.gridworld.State;
+import sim.app.guidedps.taxi.agents.LearningAgent;
 
 /**
  *
@@ -14,9 +15,15 @@ import sim.app.guidedps.taxi.World;
  */
 public class MazeAgent extends GridAgent{
 
-    @Override
-    public void resetAgent(int x, int y, World.LocState passengerState, World.LocState desState) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public MazeAgent(Maze model, LearningAgent agent) {
+        this.model = model;
+        this.agent = agent;
+    }
+    
+    
+    
+    public void resetAgent() {
+        //agent.setState(new State(x, y));
     }
     
 }

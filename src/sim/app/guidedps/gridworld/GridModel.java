@@ -30,7 +30,7 @@ public abstract class GridModel extends SimState{
 	
 	public int stepBounds = 10000000;
 	public Stoppable agentStopper;
-	public World world;
+	public Environment world;
 	
 	
 	protected boolean training = true;

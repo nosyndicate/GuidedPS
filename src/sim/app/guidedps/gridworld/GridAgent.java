@@ -90,7 +90,6 @@ public abstract class GridAgent implements Steppable{
 		return action;
 	}
 	
-	public abstract void resetAgent(int x, int y, LocState passengerState, LocState desState);
 	
 	
 	

@@ -46,7 +46,6 @@ public class TaxiAgent extends GridAgent{
 		return this.pickup;
 	}
 
-        @Override
 	public void resetAgent(int x, int y, LocState passengerState,
 			LocState desState) {
 		agent.setState(new State(x, y, passengerState, desState));

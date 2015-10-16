@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import sim.app.guidedps.gridworld.Environment;
 import sim.app.guidedps.gridworld.State.Action;
-import sim.app.guidedps.taxi.Taxi;
 
 
 
@@ -63,23 +62,7 @@ public class World extends Environment {
 	private static final long serialVersionUID = 1L;
 	
 	private Taxi model;
-	private boolean endGame;
 	
-	
-	
-
-	
-
-	
-	public void setEndGame(boolean endGame) {
-		this.endGame = endGame;
-	}
-
-
-	public boolean isEndGame() {
-		return endGame;
-	}
-
 
 	public World(Taxi state)
 	{
