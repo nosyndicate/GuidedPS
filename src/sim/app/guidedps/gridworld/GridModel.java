@@ -21,10 +21,10 @@ public abstract class GridModel extends SimState{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int height = 5;
-	public static final int width = 5;
-	public SparseGrid2D gridField = new SparseGrid2D(width, height);
-	public ObjectGrid2D backgroundField = new ObjectGrid2D(width, height);
+	public int height = 5;
+	public int width = 5;
+	public SparseGrid2D gridField;
+	public ObjectGrid2D backgroundField;
 	public ArrayList<State> stateList = new ArrayList<State>();
 	public HashMap<State, Integer> stateMap = new HashMap<State,Integer>();
 	

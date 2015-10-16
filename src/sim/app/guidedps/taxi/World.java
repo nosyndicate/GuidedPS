@@ -148,12 +148,12 @@ public class World extends Environment {
 					model.agent.setLocation(agentLoc.x, agentLoc.y-1, model.gridField);;
 				}
 			}else if (action==Action.SOUTH) {
-				if(agentLoc.y+1<Taxi.height) // legal movement
+				if(agentLoc.y+1<model.height) // legal movement
 				{
 					model.agent.setLocation(agentLoc.x, agentLoc.y+1, model.gridField);;
 				}
 			}else if (action==Action.EAST) {
-				if(agentLoc.x+1<Taxi.width) // legal movement
+				if(agentLoc.x+1<model.width) // legal movement
 				{
 					model.agent.setLocation(agentLoc.x+1, agentLoc.y, model.gridField);;
 				}

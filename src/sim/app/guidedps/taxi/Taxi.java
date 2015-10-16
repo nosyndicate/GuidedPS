@@ -9,13 +9,15 @@ import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.GridObject;
 
 import sim.app.guidedps.taxi.agents.PrioritizedSweeping;
+import sim.field.grid.ObjectGrid2D;
+import sim.field.grid.SparseGrid2D;
 
 public class Taxi extends GridModel{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int height = 5;
-	public static final int width = 5;
+	public final int height = 5;
+	public final int width = 5;
 
 	public TaxiAgent agent;
 	public GridObject passenger;
@@ -26,6 +28,9 @@ public class Taxi extends GridModel{
 	public Taxi(long seed) {
 		super(seed);
 	
+                gridField = new SparseGrid2D(width, height);
+                backgroundField = new ObjectGrid2D(width, height);
+                
 		// setup the background
 		
 		backgroundField.set(0, 0, new Block(Color.red, new int[]{0,0,0,0}));
