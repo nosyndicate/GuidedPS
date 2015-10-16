@@ -42,6 +42,7 @@ public class Taxi extends SimState{
 	private boolean verbose = true;
 	private int numState;
 	private int numAction;
+	private boolean stochastic = true;
 	
 	public int getGameTime()
 	{
@@ -60,6 +61,14 @@ public class Taxi extends SimState{
 
 	public void setTraining(boolean training) {
 		this.training = training;
+	}
+	
+	public boolean isStochastic() {
+		return stochastic;
+	}
+	
+	public void setStochastic(boolean value) {
+		this.stochastic = value;
 	}
 
 	public int getStepBounds()

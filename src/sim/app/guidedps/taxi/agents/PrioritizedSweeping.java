@@ -89,11 +89,6 @@ public class PrioritizedSweeping extends TaxiAgent {
 		State sprime = new State(x, y, model.destination.state, model.passenger.state);
 		reward = model.world.getReward();
 		
-		if(reward==19)
-		{
-			System.out.println("success");
-		}
-		
 		int stateIndex = model.stateMap.get(s);
 		int sprimeIndex = model.stateMap.get(sprime);
 		if(model.world.isEndGame())

@@ -5,6 +5,9 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.swing.ActionMap;
+
 import sim.app.guidedps.taxi.State.Action;
 
 
@@ -22,6 +25,7 @@ public class World extends Environment {
 	public static HashMap<Integer, Point> locationMap;
 	public static HashMap<Point, Action> illegalMovement;
 	public static ArrayList<Color> colorList;
+	public static int[] movementIndex = new int[]{0,1,2,3};
 	static{
 		World.locationMap = new HashMap<Integer, Point>();
 		illegalMovement = new HashMap<Point, Action>();
@@ -51,6 +55,8 @@ public class World extends Environment {
 		illegalMovement.put(new Point(2,4), Action.EAST);
 		illegalMovement.put(new Point(3,3), Action.WEST);
 		illegalMovement.put(new Point(3,4), Action.WEST);
+		
+
 		
 		
 	}
@@ -124,45 +130,69 @@ public class World extends Environment {
 					return success + regular;
 				}	
 			}
-			// illegal action, putdown without put
+			// illegal action, putdown without pickup
 			return illegal;
 		}
 		else {
+			Action realAction = getRealAction(action);
+			
+			//System.out.println("real action is "+realAction);
+			
 			Point agentLoc = model.agent.getLocation();
 			if(illegalMovement.containsKey(agentLoc))
 			{
 				// illegal movement
-				if(action==illegalMovement.get(agentLoc))
+				if(realAction==illegalMovement.get(agentLoc))
 				{
 					return regular;
 				}
 			}
 			
-			
-			if(action==Action.NORTH)
+			if(realAction==Action.NORTH)
 			{
+				
 				if(agentLoc.y-1>=0) // legal movement
 				{
-					model.agent.setLocation(agentLoc.x, agentLoc.y-1, model.taxiField);;
+					model.agent.setLocation(agentLoc.x, agentLoc.y-1, model.taxiField);
 				}
-			}else if (action==Action.SOUTH) {
+			}else if (realAction==Action.SOUTH) {
 				if(agentLoc.y+1<Taxi.height) // legal movement
 				{
-					model.agent.setLocation(agentLoc.x, agentLoc.y+1, model.taxiField);;
+					model.agent.setLocation(agentLoc.x, agentLoc.y+1, model.taxiField);
 				}
-			}else if (action==Action.EAST) {
+			}else if (realAction==Action.EAST) {
 				if(agentLoc.x+1<Taxi.width) // legal movement
 				{
-					model.agent.setLocation(agentLoc.x+1, agentLoc.y, model.taxiField);;
+					model.agent.setLocation(agentLoc.x+1, agentLoc.y, model.taxiField);
 				}
-			}else if (action==Action.WEST) {
+			}else if (realAction==Action.WEST) {
 				if(agentLoc.x-1>=0) // legal movement
 				{
-					model.agent.setLocation(agentLoc.x-1, agentLoc.y, model.taxiField);;
+					model.agent.setLocation(agentLoc.x-1, agentLoc.y, model.taxiField);
 				}
 			}
 			return regular;
 		}
+	}
+
+
+	private Action getRealAction(Action action) {
+		
+		if(model.isStochastic()){
+			int index = action.ordinal();
+			double sample = model.random.nextDouble();
+			if(0.7<=sample&&sample<0.85) // decrease
+			{
+				index = (index+4-1)%4;
+			}
+			else if(0.85<=sample&&sample<1.0) // increase
+			{
+				index = (index+1)%4;
+			}
+			
+			action = Action.values()[index];
+		}
+		return action;
 	}
 
 	

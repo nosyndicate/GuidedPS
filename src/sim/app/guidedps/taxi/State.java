@@ -15,8 +15,8 @@ public class State {
 	public enum Action
 	{
 		NORTH,
-		SOUTH,
 		EAST,
+		SOUTH,
 		WEST,
 		PICKUP,
 		PUTDOWN
