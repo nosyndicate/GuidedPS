@@ -6,18 +6,22 @@
 package sim.app.guidedps.gridworld;
 
 import sim.app.guidedps.taxi.World;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.management.modelmbean.ModelMBean;
+
 import sim.engine.SimState;
 import sim.engine.Stoppable;
 import sim.field.grid.ObjectGrid2D;
 import sim.field.grid.SparseGrid2D;
 
 /**
- *
+ * 
  * @author drew
  */
-public abstract class GridModel extends SimState{
+public abstract class GridModel extends SimState {
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,13 +30,12 @@ public abstract class GridModel extends SimState{
 	public SparseGrid2D gridField;
 	public ObjectGrid2D backgroundField;
 	public ArrayList<State> stateList = new ArrayList<State>();
-	public HashMap<State, Integer> stateMap = new HashMap<State,Integer>();
-	
+	public HashMap<State, Integer> stateMap = new HashMap<State, Integer>();
+
 	public int stepBounds = 10000000;
 	public Stoppable agentStopper;
 	public Environment world;
-	
-	
+
 	protected boolean training = true;
 	protected int gameTime = 0;
 	public int gameStartIteration = 0;
@@ -42,34 +45,29 @@ public abstract class GridModel extends SimState{
 	private boolean stochastic = true;
 	protected int numState;
 	protected int numAction;
-    
-        protected abstract void initAgents();
-        
-        public abstract void initGame();
-        
-        
-        public GridModel(long seed) {
+
+	protected abstract void initAgents();
+
+	public abstract void initGame();
+
+	public GridModel(long seed) {
 		super(seed);
-        }
-        
-        public void start()
-	{
+	}
+
+	public void start() {
 		super.start();
-                
+		gameTime = 0;
 		initAgents();
 	}
-        
-        public int getGameTime()
-	{
+
+	public int getGameTime() {
 		return gameTime;
 	}
-	
-	public int getGameIterations()
-	{
+
+	public int getGameIterations() {
 		return gameEndIteratioin - gameStartIteration;
 	}
-	
-	
+
 	public boolean isTraining() {
 		return training;
 	}
@@ -78,41 +76,38 @@ public abstract class GridModel extends SimState{
 		this.training = training;
 	}
 
-	public int getStepBounds()
-	{
+	public int getStepBounds() {
 		return stepBounds;
 	}
-	
-	public void setStepBounds(int val)
-	{
+
+	public void setStepBounds(int val) {
 		this.stepBounds = val;
 	}
-        
-        public boolean getVerbose() {
+
+	public boolean getVerbose() {
 		return this.verbose;
 	}
-	
-	public void setVerbose(boolean val)
-	{
+
+	public void setVerbose(boolean val) {
 		this.verbose = val;
 	}
-	
+
 	public int getNumState() {
 		return this.numState;
 	}
-	
+
 	public int getNumAction() {
 		return this.numAction;
 	}
-	
+
 	public boolean isStochastic() {
 		return stochastic;
 	}
-	
+
 	public void setStochastic(boolean value) {
 		this.stochastic = value;
 	}
-        
-    public abstract State getCurrentState();
-        
+
+	public abstract State getCurrentState();
+
 }

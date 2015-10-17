@@ -74,21 +74,21 @@ public class Taxi extends GridModel{
 	
         @Override
 	public final void initGame()
-	{
+	{        	
 		gameTime++;
 		
 		gridField.clear();
 		
 		// reset the passenger's location and state
-		int passengerIndex = random.nextInt(4);
-		//int passengerIndex = 0;
+		//int passengerIndex = random.nextInt(4);
+		int passengerIndex = 0;
 		Point loc = World.locationMap.get(passengerIndex);
 		passenger.setLocation(loc.x, loc.y, gridField);
 		passenger.state = World.LocState.values()[passengerIndex];
 		
 		// initial destination's location and state
-		int destinationIndex = random.nextInt(4);
-		//int destinationIndex = 3;
+		//int destinationIndex = random.nextInt(4);
+		int destinationIndex = 3;
 		loc = World.locationMap.get(destinationIndex);
 		destination.setLocation(loc.x, loc.y, gridField);
 		destination.state = World.LocState.values()[destinationIndex];

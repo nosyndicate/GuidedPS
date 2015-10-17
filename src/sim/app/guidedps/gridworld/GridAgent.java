@@ -9,7 +9,7 @@ import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.field.grid.SparseGrid2D;
 
-public abstract class GridAgent implements Steppable{
+public abstract class GridAgent implements Steppable {
 
 	private static final long serialVersionUID = 1L;
 	protected int x;
@@ -17,30 +17,26 @@ public abstract class GridAgent implements Steppable{
 	protected boolean pickup;
 	protected GridModel model;
 	protected Action action;
-	
+
 	protected int counter;
 
-        protected LearningAgent agent;
-        
-        
-        
-        @Override
+	protected LearningAgent agent;
+
+	@Override
 	public void step(SimState state) {
-		if(model.isTraining())
+		if (model.isTraining())
 			counter++;
-		
-		
+
 		learning();
-		
+
 		// if one episode is ended, we start a new one
-		if(model.world.isEndGame()) {
+		if (model.world.isEndGame()) {
 			model.gameStartIteration = model.gameEndIteratioin;
 			model.gameEndIteratioin = counter;
 			model.initGame();
 			model.world.setEndGame(false);
 		}
-				
-				
+
 		// run out of iteration, stop the agent and world, reset the counter
 		if (counter >= model.stepBounds) {
 			model.agentStopper.stop();
@@ -51,9 +47,9 @@ public abstract class GridAgent implements Steppable{
 			System.out.println("==========================");
 			return;
 		}
-		
+
 	}
-	
+
 	public void learning() {
 		// action selection
 		this.action = agent.ActionSelection();
@@ -74,29 +70,23 @@ public abstract class GridAgent implements Steppable{
 			agent.updatePolicy();
 
 	}
-	
-	public String desAction()
-	{
+
+	public String desAction() {
 		return "This is the action taken last step";
 	}
-	
-	
-	public Action getAction()
-	{
+
+	public Action getAction() {
 		return action;
 	}
-	
-	
-	public void setLocation(int x, int y, SparseGrid2D field)
-	{
+
+	public void setLocation(int x, int y, SparseGrid2D field) {
 		this.x = x;
 		this.y = y;
-		field.setObjectLocation(this,x,y);
+		field.setObjectLocation(this, x, y);
 	}
-	
-	public Point getLocation()
-	{
+
+	public Point getLocation() {
 		return new Point(x, y);
 	}
-	
+
 }
