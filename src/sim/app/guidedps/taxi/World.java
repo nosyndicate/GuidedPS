@@ -55,9 +55,6 @@ public class World extends Environment {
 		illegalMovement.put(new Point(3,3), Action.WEST);
 		illegalMovement.put(new Point(3,4), Action.WEST);
 		
-
-		
-		
 	}
 	private static final long serialVersionUID = 1L;
 	
@@ -127,23 +124,23 @@ public class World extends Environment {
 				// illegal movement
 				if(realAction==illegalMovement.get(agentLoc))
 				{
+					System.out.println("illegalMovement: realAction is "+realAction+ ", action is "+action);
 					return regular;
 				}
 			}
 			
 			if(realAction==Action.NORTH)
 			{
-				
 				if(agentLoc.y-1>=0) // legal movement
 				{
 					model.agent.setLocation(agentLoc.x, agentLoc.y-1, model.gridField);;
 				}
-			}else if (action==Action.SOUTH) {
+			}else if (realAction==Action.SOUTH) {
 				if(agentLoc.y+1<model.height) // legal movement
 				{
 					model.agent.setLocation(agentLoc.x, agentLoc.y+1, model.gridField);;
 				}
-			}else if (action==Action.EAST) {
+			}else if (realAction==Action.EAST) {
 				if(agentLoc.x+1<model.width) // legal movement
 				{
 					model.agent.setLocation(agentLoc.x+1, agentLoc.y, model.gridField);;
