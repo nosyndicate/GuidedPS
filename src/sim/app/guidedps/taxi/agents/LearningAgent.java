@@ -11,9 +11,9 @@ import sim.app.guidedps.gridworld.State;
  *
  * @author drew
  */
-public interface LearningAgent {
-    
-    public void setState(State state);
-    public State.Action ActionSelection();
-    public void updatePolicy();
+public abstract class LearningAgent {
+    public abstract void setState(State state);
+    public abstract State.Action ActionSelection();
+    public abstract void updatePolicy();
+	public double[] stateValue;
 }

@@ -6,12 +6,11 @@ import sim.app.guidedps.gridworld.State;
 import sim.app.guidedps.util.RelaxablePriorityQueue;
 import sim.app.guidedps.util.Utils;
 
-public class PrioritizedSweeping implements LearningAgent {
+public class PrioritizedSweeping extends LearningAgent {
 
 	
 	private static final long serialVersionUID = 1L;
 	private RelaxablePriorityQueue<PriorityTuple> queue = new RelaxablePriorityQueue<>();
-	private double[] stateValue;
 	private int[][] stateActionCounter;
 	private double[][] rewardSum;
 	private double[][] qValue;

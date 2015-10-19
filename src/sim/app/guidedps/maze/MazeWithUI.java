@@ -8,21 +8,20 @@ package sim.app.guidedps.maze;
 import java.awt.Color;
 import javax.swing.JFrame;
 import sim.app.guidedps.gridworld.BlockPortrayal;
-import sim.app.guidedps.taxi.Taxi;
-import sim.app.guidedps.taxi.TaxiWithUI;
 import sim.display.Console;
 import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
+import sim.field.grid.DoubleGrid2D;
 import sim.portrayal.Inspector;
-import sim.portrayal.Portrayal;
 import sim.portrayal.SimpleInspector;
+import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.portrayal.grid.ObjectGridPortrayal2D;
 import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.portrayal.inspector.TabbedInspector;
 import sim.portrayal.simple.OvalPortrayal2D;
-import sim.portrayal.simple.RectanglePortrayal2D;
+import sim.util.gui.SimpleColorMap;
 
 /**
  * 
@@ -34,6 +33,8 @@ public class MazeWithUI extends GUIState {
 	private Maze model;
 	private SparseGridPortrayal2D mazeFieldPortrayal;
 	private ObjectGridPortrayal2D backgroundPortrayal;
+	private FastValueGridPortrayal2D stateValuePortrayal;
+	private FastValueGridPortrayal2D signalValuePortrayal;
 	private Display2D display;
 
 	public MazeWithUI() {
@@ -96,9 +97,23 @@ public class MazeWithUI extends GUIState {
 
 		mazeFieldPortrayal = getAgentFieldPortrayal();
 		backgroundPortrayal = getBackgroundPortrayal();
+		stateValuePortrayal = getStateValuePortrayal();
+		//signalValuePortrayal = getSignalValuePortrayal();
 		display.attach(backgroundPortrayal, "Background");
 		display.attach(mazeFieldPortrayal, "Agent");
+		display.attach(stateValuePortrayal, "State Value");
 
+	}
+
+	private DoubleGrid2D getSignalValuePortrayal() {
+		return null;
+	}
+
+	private FastValueGridPortrayal2D getStateValuePortrayal() {
+		FastValueGridPortrayal2D portrayal = new FastValueGridPortrayal2D();
+		portrayal.setField(model.stateValueGrid);
+		portrayal.setMap(new SimpleColorMap(-70, 0, Color.red, new Color(0,0,0,0)));
+		return portrayal;
 	}
 
 	private ObjectGridPortrayal2D getBackgroundPortrayal() {

@@ -8,13 +8,12 @@ import sim.app.guidedps.gridworld.State;
 import sim.app.guidedps.util.RelaxablePriorityQueue;
 import sim.app.guidedps.util.Utils;
 
-public class GuidedPS implements LearningAgent {
+public class GuidedPS extends LearningAgent {
 
 	private static final long serialVersionUID = 1L;
 	private RelaxablePriorityQueue<PriorityTuple> queue = new RelaxablePriorityQueue<>();
 	private RelaxablePriorityQueue<PriorityTuple> signalQueue = new RelaxablePriorityQueue<>();
 	private HashMap<Demonstration, Double> demonstrationMap = new HashMap<Demonstration, Double>();
-	private double[] stateValue;
 	private double[] signalValue;
 	private int[][] stateActionCounter;
 	private double[][] rewardSum;

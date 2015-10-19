@@ -3,6 +3,7 @@ package sim.app.guidedps.gridworld;
 import java.awt.Point;
 
 import sim.app.guidedps.gridworld.State.Action;
+import sim.app.guidedps.maze.Maze;
 import sim.app.guidedps.taxi.World.LocState;
 import sim.app.guidedps.taxi.agents.LearningAgent;
 import sim.engine.SimState;
@@ -68,6 +69,9 @@ public abstract class GridAgent implements Steppable {
 		// update the policy
 		if (model.isTraining())
 			agent.updatePolicy();
+		
+		if(model instanceof Maze)
+			((Maze)model).updateValueGrid();
 
 	}
 
@@ -89,4 +93,8 @@ public abstract class GridAgent implements Steppable {
 		return new Point(x, y);
 	}
 
+	public LearningAgent getLearningAgent() {
+		return this.agent;
+	}
+	
 }

@@ -6,7 +6,7 @@ import sim.app.guidedps.gridworld.State;
 import sim.app.guidedps.gridworld.State.Action;
 import sim.app.guidedps.util.Utils;
 
-public class QAgent implements LearningAgent {
+public class QAgent extends LearningAgent {
 
 	private static final long serialVersionUID = 1L;
 
@@ -53,6 +53,7 @@ public class QAgent implements LearningAgent {
 			}
 
 			qValue[stateIndex][actionIndex] = newVal;
+			stateValue[stateIndex] = maxQ(stateIndex);
 			
 			setState(sprime);
 		}
@@ -100,6 +101,7 @@ public class QAgent implements LearningAgent {
 
 	private void initializeQTable() {
 		this.qValue = new double[model.getNumState()][model.getNumAction()];
+		this.stateValue = new double[model.getNumState()];
 		for (int i = 0; i < qValue.length; ++i) {
 			for (int j = 0; j < model.getNumAction(); ++j) {
 				qValue[i][j] = initQ;
