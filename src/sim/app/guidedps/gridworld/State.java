@@ -46,9 +46,9 @@ public class State {
 	@Override
 	public int hashCode() {
 		int i = x;
-		i = i * 10 + y;
-		i = i * 10 + destination.ordinal();
-		i = i * 10 + passenger.ordinal();
+		i = i * 100 + y;
+		i = i * 100 + destination.ordinal();
+		i = i * 100 + passenger.ordinal();
 
 		return i;
 	}

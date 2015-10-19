@@ -124,7 +124,7 @@ public class World extends Environment {
 				// illegal movement
 				if(realAction==illegalMovement.get(agentLoc))
 				{
-					System.out.println("illegalMovement: realAction is "+realAction+ ", action is "+action);
+					//System.out.println("illegalMovement: realAction is "+realAction+ ", action is "+action);
 					return regular;
 				}
 			}

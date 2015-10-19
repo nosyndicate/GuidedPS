@@ -42,6 +42,7 @@ public class GuidedPS implements LearningAgent {
 	private void initializaDemonstration() {
 		// add demonstration here
 		// demonstrationMap.put(new Demonstration(new State(x, y, d, p), a), value);
+		demonstrationMap.put(new Demonstration(new State(0, 0, 3, 0), 4), 1.0); //pick at the red spot
 	}
 
 	private void initialization() {
@@ -84,14 +85,15 @@ public class GuidedPS implements LearningAgent {
 					counter++;
 				}
 
+				System.out.println("start signal sweeping");
 				double signalStrength = getSignalStrength(stateIndex,actionIndex);
 				signalForwardup(stateIndex, actionIndex, sprimeIndex,
 						signalStrength);
 				counter = 0;
-				while (counter < p && !signalQueue.isEmpty()) {
+				/*while (counter < p && !signalQueue.isEmpty()) {
 					this.forwardSweeping();
 					counter++;
-				}
+				}*/
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -121,8 +123,7 @@ public class GuidedPS implements LearningAgent {
 			for (int i = 0; i < numState + 1; ++i) {
 				for (int j = 0; j < numAction; ++j) {
 					if (sASCounter[i][j][sprime] > 0) {
-						double value = tau * stateActionCounter[i][j]
-								/ sASCounter[i][j][sprime] * signalValue[s];
+						double value = tau * sASCounter[i][j][sprime] / stateActionCounter[i][j] * signalValue[s];
 						if (i == s && j == a) {
 							value += signalStrength;
 						}
@@ -132,10 +133,14 @@ public class GuidedPS implements LearningAgent {
 			}
 
 			double oldSignalValue = signalValue[sprime];
-			signalValue[sprime] = max;
-			double delta = Math.abs(max - oldSignalValue);
-			if (delta > theta)
-				signalQueue.relax(new PriorityTuple(sprime, delta), delta);
+			if(signalValue[sprime] < max)
+				signalValue[sprime] = max;
+			
+			double delta = Math.abs(signalValue[sprime] - oldSignalValue);
+			System.out.println("h value for sprime is "+signalValue[sprime]+", amplify value is "+getAmplification(sprime));
+			
+			//if (delta > theta)
+			//	signalQueue.relax(new PriorityTuple(sprime, delta), delta);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -184,7 +189,7 @@ public class GuidedPS implements LearningAgent {
 	}
 
 	private double getAmplification(int s) {
-		double v = Math.exp(-signalValue[s]) + 1;
+		double v = Math.exp(-signalValue[s]*2) + 1;
 		return 2 / v;
 	}
 

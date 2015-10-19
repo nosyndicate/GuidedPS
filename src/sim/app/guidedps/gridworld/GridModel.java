@@ -5,12 +5,8 @@
  */
 package sim.app.guidedps.gridworld;
 
-import sim.app.guidedps.taxi.World;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.management.modelmbean.ModelMBean;
 
 import sim.engine.SimState;
 import sim.engine.Stoppable;

@@ -19,6 +19,7 @@ public class QAgent implements LearningAgent {
 	private double initQ = 0;
 	private double epsilon = 0.1;
 	private State s;
+	private State sprime = null;
 	private GridModel model;
 	private double reward;
 	private Action action;
@@ -29,7 +30,8 @@ public class QAgent implements LearningAgent {
 	}
 
 	public void updatePolicy() {
-		State sprime = model.getCurrentState();
+		try{
+		sprime = model.getCurrentState();
 		reward = model.world.getReward();
 
 		// only update the Q value in training mode
@@ -51,9 +53,14 @@ public class QAgent implements LearningAgent {
 			}
 
 			qValue[stateIndex][actionIndex] = newVal;
+			
+			setState(sprime);
+		}
+		}catch(NullPointerException e) {
+			e.printStackTrace();
 		}
 
-		setState(sprime);
+		
 	}
 
 	private String qTableForState(ArrayList<Double> actionList) {

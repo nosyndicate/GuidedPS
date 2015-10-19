@@ -22,8 +22,9 @@ public class MazeAgent extends GridAgent{
     
     
     
-    public void resetAgent() {
-        //agent.setState(new State(x, y));
+    public void resetAgent(int x, int y) {
+    	agent.setState(new State(x, y, 0, 0));
+		this.setLocation(x, y, model.gridField);
     }
     
 }

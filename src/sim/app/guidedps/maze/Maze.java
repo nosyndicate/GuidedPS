@@ -7,103 +7,140 @@ package sim.app.guidedps.maze;
 
 import java.awt.Color;
 import java.awt.Point;
+
 import sim.app.guidedps.gridworld.Block;
 import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.GridObject;
 import sim.app.guidedps.gridworld.State;
 import sim.app.guidedps.taxi.World;
 import sim.app.guidedps.taxi.agents.PrioritizedSweeping;
+import sim.app.guidedps.taxi.agents.QAgent;
+import sim.field.grid.ObjectGrid2D;
+import sim.field.grid.SparseGrid2D;
 
 /**
- *
+ * 
  * @author drew
  */
-public class Maze extends GridModel{
+public class Maze extends GridModel {
 
-    private static final long serialVersionUID = 1L;
-    public final int height = 26;
-    public final int width = 26;
-    
-    
-    public MazeAgent agent;
-    public GridObject source;
-    public GridObject destination;
+	private static final long serialVersionUID = 1L;
+	public final int height = 23;
+	public final int width = 26;
 
-    public Maze(long seed) {
-        super(seed);
-        
-        
-        //setup the background
-        backgroundField.set(0, 14, new Block(Color.BLACK, new int[]{1,1,1,1}));
-        backgroundField.set(1, 14, new Block(Color.BLACK, new int[]{1,1,1,1}));
-        backgroundField.set(2, 14, new Block(Color.BLACK, new int[]{1,1,1,1}));
-        backgroundField.set(3, 14, new Block(Color.BLACK, new int[]{1,1,1,1}));
-        backgroundField.set(4, 14, new Block(Color.BLACK, new int[]{1,1,1,1}));
-        backgroundField.set(5, 14, new Block(Color.BLACK, new int[]{1,1,1,1}));
-        backgroundField.set(6, 14, new Block(Color.BLACK, new int[]{1,1,1,1}));
-        
-        
-        source = new GridObject();
-        destination = new GridObject();
-        world = new MazeWorld(this);
-        
-        this.constructStateList();
-        this.numAction = 4;
-        initAgents();
-    }
+	public MazeAgent agent;
+	public GridObject source;
+	public GridObject destination;
 
-    @Override
-    protected final void initAgents() {
-        agent = new MazeAgent(this, new PrioritizedSweeping(this));
-        initGame();
+	public Maze(long seed) {
+		super(seed);
 
-        agentStopper = schedule.scheduleRepeating(0, 0, agent);
+		gridField = new SparseGrid2D(width, height);
+		backgroundField = new ObjectGrid2D(width, height);
+
+		buildBackground();
 		
-    }
+		// source
+		backgroundField.set(1, 21, new Block(Color.blue,
+				new int[] { 0, 0, 0, 0 }));
+		// destination
+		backgroundField.set(25, 22, new Block(Color.red,
+				new int[] { 0, 0, 0, 0 }));
 
-    @Override
-    public final void initGame() {
-        gameTime++;
+		source = new GridObject();
+		destination = new GridObject();
+		world = new MazeWorld(this);
+
+		this.constructStateList();
+		this.numAction = 4;
+		initAgents();
+	}
+	
+	private void buildVerticalBlocks(int x, int start, int end) {
+		for(int i = start;i<=end;++i) {
+			backgroundField.set(x, i, new Block(Color.BLACK, new int[] { 1, 1, 1,
+					1 }));
+		}
+	}
+	
+	private void buildHorizontalBlocks(int y, int start, int end) {
+		for(int i = start;i<=end;++i) {
+			backgroundField.set(i, y, new Block(Color.BLACK, new int[] { 1, 1, 1,
+					1 }));
+		}
+	}
+
+	private void buildBackground() {
 		
-        gridField.clear();
+		// left bottom
+		buildVerticalBlocks(3, 14, 22);
+		
+		// right bottom
+		buildHorizontalBlocks(18, 22, 25);
+		
+		// right
+		buildVerticalBlocks(22, 7, 14);
+		
+		// right top
+		buildVerticalBlocks(18, 3, 12);
+		buildHorizontalBlocks(3, 19, 25);
+		
+		// left top
+		buildVerticalBlocks(3, 3, 10);
+		buildVerticalBlocks(14, 0, 6);
+		buildHorizontalBlocks(6, 4, 13);
+		
+		// mid bottom
+		buildVerticalBlocks(7, 10, 21);
+		buildVerticalBlocks(18, 17, 22);
+		buildHorizontalBlocks(17, 8, 17);
+		
+		// mid
+		buildVerticalBlocks(14, 10, 12);
+		buildHorizontalBlocks(10, 11, 13);
 
-        // reset the passenger's location and state
-        int passengerIndex = random.nextInt(4);
-        //int passengerIndex = 0;
-        Point loc = World.locationMap.get(passengerIndex);
-        source.setLocation(loc.x, loc.y, gridField);
-       
+	}
 
-        // initial destination's location and state
-        int destinationIndex = random.nextInt(4);
-        //int destinationIndex = 3;
-        loc = World.locationMap.get(destinationIndex);
-        destination.setLocation(loc.x, loc.y, gridField);
-        destination.state = World.LocState.values()[destinationIndex];
+	@Override
+	protected final void initAgents() {
+		//agent = new MazeAgent(this, new QAgent(this));
+		agent = new MazeAgent(this, new PrioritizedSweeping(this));
+		initGame();
 
-       
-        agent.resetAgent();
+		agentStopper = schedule.scheduleRepeating(0, 0, agent);
 
-    }
+	}
 
-    @Override
-    public State getCurrentState() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    private void constructStateList() {
-        // just x by y states since source and destination are fixed
-        int counter = 0;
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                State state = new State(x, y, 0, 0);// using the same state but only caring about x and y
-                stateList.add(state);
-		stateMap.put(state, counter++);
-            }
-        }
-        this.numState = stateList.size(); // we have a terminal state
-    }    
-        
-    
-    
+	@Override
+	public final void initGame() {
+		gameTime++;
+
+		gridField.clear();
+
+		// agent is alway start at source (blue square)
+		int x = 1;
+		int y = 21;
+		agent.resetAgent(x, y);
+
+	}
+
+	@Override
+	public State getCurrentState() {
+		return new State(agent.getLocation().x, agent.getLocation().y, 0, 0);
+	}
+
+	private void constructStateList() {
+		// just x by y states since source and destination are fixed
+		int counter = 0;
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				State state = new State(x, y, 0, 0);// using the same state but
+													// only caring about x and y
+				stateList.add(state);
+				stateMap.put(state, counter++);
+			}
+		}
+		this.numState = stateList.size();
+	}
+
 }
