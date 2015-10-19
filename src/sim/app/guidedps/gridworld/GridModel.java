@@ -38,7 +38,7 @@ public abstract class GridModel extends SimState {
 	public int gameEndIteratioin = 0;
 
 	protected boolean verbose = true;
-	private boolean stochastic = true;
+	private boolean stochastic = false;
 	protected int numState;
 	protected int numAction;
 

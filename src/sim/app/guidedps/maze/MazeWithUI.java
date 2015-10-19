@@ -98,15 +98,20 @@ public class MazeWithUI extends GUIState {
 		mazeFieldPortrayal = getAgentFieldPortrayal();
 		backgroundPortrayal = getBackgroundPortrayal();
 		stateValuePortrayal = getStateValuePortrayal();
+		signalValuePortrayal = getSignalValuePortrayal();
 		//signalValuePortrayal = getSignalValuePortrayal();
 		display.attach(backgroundPortrayal, "Background");
 		display.attach(mazeFieldPortrayal, "Agent");
 		display.attach(stateValuePortrayal, "State Value");
+		display.attach(signalValuePortrayal, "Demonstration Signal");
 
 	}
 
-	private DoubleGrid2D getSignalValuePortrayal() {
-		return null;
+	private FastValueGridPortrayal2D getSignalValuePortrayal() {
+		FastValueGridPortrayal2D portrayal = new FastValueGridPortrayal2D();
+		portrayal.setField(model.signalGrid);
+		portrayal.setMap(new SimpleColorMap(0, 1.0, new Color(0,0,0,0),Color.GREEN));
+		return portrayal;
 	}
 
 	private FastValueGridPortrayal2D getStateValuePortrayal() {

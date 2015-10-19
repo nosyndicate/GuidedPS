@@ -14,7 +14,6 @@ public class GuidedPS extends LearningAgent {
 	private RelaxablePriorityQueue<PriorityTuple> queue = new RelaxablePriorityQueue<>();
 	private RelaxablePriorityQueue<PriorityTuple> signalQueue = new RelaxablePriorityQueue<>();
 	private HashMap<Demonstration, Double> demonstrationMap = new HashMap<Demonstration, Double>();
-	private double[] signalValue;
 	private int[][] stateActionCounter;
 	private double[][] rewardSum;
 	private double[][] qValue;
@@ -41,7 +40,14 @@ public class GuidedPS extends LearningAgent {
 	private void initializaDemonstration() {
 		// add demonstration here
 		// demonstrationMap.put(new Demonstration(new State(x, y, d, p), a), value);
-		demonstrationMap.put(new Demonstration(new State(0, 0, 3, 0), 4), 1.0); //pick at the red spot
+		
+		// taxi demonstration
+		// demonstrationMap.put(new Demonstration(new State(0, 0, 3, 0), 4), 1.0); //pick at the red spot
+	
+		// maze demonstration
+		demonstrationMap.put(new Demonstration(new State(19, 16, 0, 0), 2), 1.0); //pick at the red spot
+		//demonstrationMap.put(new Demonstration(new State(7, 9, 0, 0), 1), 1.0); //pick at the red spot
+		//demonstrationMap.put(new Demonstration(new State(3, 13, 0, 0), 1), 1.0); //pick at the red spot
 	}
 
 	private void initialization() {
@@ -84,7 +90,7 @@ public class GuidedPS extends LearningAgent {
 					counter++;
 				}
 
-				System.out.println("start signal sweeping");
+				//System.out.println("start signal sweeping");
 				double signalStrength = getSignalStrength(stateIndex,actionIndex);
 				signalForwardup(stateIndex, actionIndex, sprimeIndex,
 						signalStrength);
@@ -136,7 +142,7 @@ public class GuidedPS extends LearningAgent {
 				signalValue[sprime] = max;
 			
 			double delta = Math.abs(signalValue[sprime] - oldSignalValue);
-			System.out.println("h value for sprime is "+signalValue[sprime]+", amplify value is "+getAmplification(sprime));
+			//System.out.println("h value for sprime is "+signalValue[sprime]+", amplify value is "+getAmplification(sprime));
 			
 			//if (delta > theta)
 			//	signalQueue.relax(new PriorityTuple(sprime, delta), delta);

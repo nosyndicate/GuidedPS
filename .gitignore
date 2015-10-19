@@ -147,3 +147,9 @@ sympy-plots-for-*.tex/
 # WinEdt
 *.bak
 *.sav
+
+# Eclipse
+.classpath
+.project
+.settings/
+*.pdf

@@ -16,4 +16,5 @@ public abstract class LearningAgent {
     public abstract State.Action ActionSelection();
     public abstract void updatePolicy();
 	public double[] stateValue;
+	public double[] signalValue;
 }

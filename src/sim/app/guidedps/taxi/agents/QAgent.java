@@ -102,6 +102,7 @@ public class QAgent extends LearningAgent {
 	private void initializeQTable() {
 		this.qValue = new double[model.getNumState()][model.getNumAction()];
 		this.stateValue = new double[model.getNumState()];
+		this.signalValue = new double[model.getNumState()];
 		for (int i = 0; i < qValue.length; ++i) {
 			for (int j = 0; j < model.getNumAction(); ++j) {
 				qValue[i][j] = initQ;

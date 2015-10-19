@@ -13,6 +13,7 @@ import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.GridObject;
 import sim.app.guidedps.gridworld.State;
 import sim.app.guidedps.taxi.World;
+import sim.app.guidedps.taxi.agents.GuidedPS;
 import sim.app.guidedps.taxi.agents.LearningAgent;
 import sim.app.guidedps.taxi.agents.PrioritizedSweeping;
 import sim.app.guidedps.taxi.agents.QAgent;
@@ -34,6 +35,7 @@ public class Maze extends GridModel {
 	public GridObject source;
 	public GridObject destination;
 	public DoubleGrid2D stateValueGrid;
+	public DoubleGrid2D signalGrid;
 
 	public Maze(long seed) {
 		super(seed);
@@ -41,6 +43,7 @@ public class Maze extends GridModel {
 		gridField = new SparseGrid2D(width, height);
 		backgroundField = new ObjectGrid2D(width, height);
 		stateValueGrid = new DoubleGrid2D(width, height);
+		signalGrid = new DoubleGrid2D(width, height);
 
 		buildBackground();
 		
@@ -107,8 +110,9 @@ public class Maze extends GridModel {
 
 	@Override
 	protected final void initAgents() {
-		agent = new MazeAgent(this, new QAgent(this));
+		//agent = new MazeAgent(this, new QAgent(this));
 		//agent = new MazeAgent(this, new PrioritizedSweeping(this));
+		agent = new MazeAgent(this, new GuidedPS(this));
 		initGame();
 		
 		updateValueGrid();
@@ -125,6 +129,18 @@ public class Maze extends GridModel {
 				State s = new State(i, j, 0, 0);
 				int index = stateMap.get(s);
 				this.stateValueGrid.field[i][j] = a.stateValue[index];
+			}
+		}
+	}
+	
+	public void updateSignalGrid() {
+		LearningAgent a = this.agent.getLearningAgent();
+		
+		for (int i = 0; i < this.width; ++i) {
+			for (int j = 0; j < this.height; ++j) {
+				State s = new State(i, j, 0, 0);
+				int index = stateMap.get(s);
+				this.signalGrid.field[i][j] = a.signalValue[index];
 			}
 		}
 	}

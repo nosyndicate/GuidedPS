@@ -100,6 +100,8 @@ public class PrioritizedSweeping extends LearningAgent {
 		qValue = new double[numState+1][numAction];
 		// V(s)
 		stateValue = new double[numState+1];
+		// signal value, not use in prioritized sweeping
+		signalValue = new double[numState+1];
 	}
 	
 	
