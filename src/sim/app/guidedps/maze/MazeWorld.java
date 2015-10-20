@@ -7,10 +7,6 @@ package sim.app.guidedps.maze;
 
 import java.awt.Color;
 import java.awt.Point;
-
-import javax.security.auth.x500.X500Principal;
-
-import sim.app.crowd3d.Agent;
 import sim.app.guidedps.gridworld.Block;
 import sim.app.guidedps.gridworld.Environment;
 import sim.app.guidedps.gridworld.State;

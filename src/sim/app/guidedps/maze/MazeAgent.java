@@ -5,9 +5,9 @@
  */
 package sim.app.guidedps.maze;
 
+import sim.app.guidedps.agents.LearningAgent;
 import sim.app.guidedps.gridworld.GridAgent;
 import sim.app.guidedps.gridworld.State;
-import sim.app.guidedps.taxi.agents.LearningAgent;
 
 /**
  *
@@ -15,12 +15,12 @@ import sim.app.guidedps.taxi.agents.LearningAgent;
  */
 public class MazeAgent extends GridAgent{
 
-    public MazeAgent(Maze model, LearningAgent agent) {
+	private static final long serialVersionUID = 1L;
+
+	public MazeAgent(Maze model, LearningAgent agent) {
         this.model = model;
         this.agent = agent;
     }
-    
-    
     
     public void resetAgent(int x, int y) {
     	agent.setState(new State(x, y, 0, 0));

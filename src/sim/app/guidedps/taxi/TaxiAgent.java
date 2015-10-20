@@ -1,12 +1,11 @@
 package sim.app.guidedps.taxi;
 
+import sim.app.guidedps.agents.LearningAgent;
 import sim.app.guidedps.gridworld.GridAgent;
 import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.GridObject;
 import sim.app.guidedps.gridworld.State;
-
 import sim.app.guidedps.taxi.World.LocState;
-import sim.app.guidedps.taxi.agents.LearningAgent;
 import sim.field.grid.SparseGrid2D;
 
 public class TaxiAgent extends GridAgent {

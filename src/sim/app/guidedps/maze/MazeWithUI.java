@@ -13,7 +13,6 @@ import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
-import sim.field.grid.DoubleGrid2D;
 import sim.portrayal.Inspector;
 import sim.portrayal.SimpleInspector;
 import sim.portrayal.grid.FastValueGridPortrayal2D;

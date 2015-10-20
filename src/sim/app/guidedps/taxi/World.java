@@ -20,7 +20,7 @@ public class World extends Environment {
 		BLUE,
 		TAXI
 	};
-	
+	private static final long serialVersionUID = 1L;
 	public static HashMap<Integer, Point> locationMap;
 	public static HashMap<Point, Action> illegalMovement;
 	public static ArrayList<Color> colorList;
@@ -56,10 +56,8 @@ public class World extends Environment {
 		illegalMovement.put(new Point(3,4), Action.WEST);
 		
 	}
-	private static final long serialVersionUID = 1L;
-	
-	private Taxi model;
-	
+
+	private Taxi model;	
 
 	public World(Taxi state)
 	{

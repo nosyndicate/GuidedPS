@@ -1,4 +1,4 @@
-package sim.app.guidedps.taxi.agents;
+package sim.app.guidedps.agents;
 
 import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.State.Action;
@@ -17,7 +17,7 @@ public class PrioritizedSweeping extends LearningAgent {
 	private int[][][] sASCounter;
 	private int numAction;
 	private int numState;
-	private double gamma = 0.9;
+	private double gamma = 1;
 	private double epsilon = 0.1;
 	private double theta = 0.05; // threshold for putting tuple into the queue
 	private State s;

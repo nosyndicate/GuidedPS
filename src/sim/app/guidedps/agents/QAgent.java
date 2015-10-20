@@ -1,4 +1,4 @@
-package sim.app.guidedps.taxi.agents;
+package sim.app.guidedps.agents;
 
 import java.util.ArrayList;
 import sim.app.guidedps.gridworld.GridModel;

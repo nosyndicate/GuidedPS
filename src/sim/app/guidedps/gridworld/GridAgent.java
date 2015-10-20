@@ -2,10 +2,9 @@ package sim.app.guidedps.gridworld;
 
 import java.awt.Point;
 
+import sim.app.guidedps.agents.LearningAgent;
 import sim.app.guidedps.gridworld.State.Action;
 import sim.app.guidedps.maze.Maze;
-import sim.app.guidedps.taxi.World.LocState;
-import sim.app.guidedps.taxi.agents.LearningAgent;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.field.grid.SparseGrid2D;
@@ -18,13 +17,14 @@ public abstract class GridAgent implements Steppable {
 	protected boolean pickup;
 	protected GridModel model;
 	protected Action action;
-
 	protected int counter;
 
 	protected LearningAgent agent;
 
 	@Override
 	public void step(SimState state) {
+		model.accumulativeReward += model.world.reward;
+		
 		if (model.isTraining())
 			counter++;
 
@@ -34,6 +34,7 @@ public abstract class GridAgent implements Steppable {
 		if (model.world.isEndGame()) {
 			model.gameStartIteration = model.gameEndIteratioin;
 			model.gameEndIteratioin = counter;
+			model.averageReward = model.accumulativeReward/model.gameTime;
 			model.initGame();
 			model.world.setEndGame(false);
 		}

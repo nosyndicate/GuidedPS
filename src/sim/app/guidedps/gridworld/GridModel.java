@@ -36,6 +36,10 @@ public abstract class GridModel extends SimState {
 	protected int gameTime = 0;
 	public int gameStartIteration = 0;
 	public int gameEndIteratioin = 0;
+	protected double accumulativeReward = 0;
+	protected double averageReward = 0;
+
+	
 
 	protected boolean verbose = true;
 	private boolean stochastic = false;
@@ -53,7 +57,13 @@ public abstract class GridModel extends SimState {
 	public void start() {
 		super.start();
 		gameTime = 0;
+		accumulativeReward = 0;
+		averageReward = 0;
 		initAgents();
+	}
+
+	public double getAverageReward() {
+		return averageReward;
 	}
 
 	public int getGameTime() {
@@ -102,6 +112,10 @@ public abstract class GridModel extends SimState {
 
 	public void setStochastic(boolean value) {
 		this.stochastic = value;
+	}
+	
+	public double getAccumulativeReward() {
+		return accumulativeReward;
 	}
 
 	public abstract State getCurrentState();

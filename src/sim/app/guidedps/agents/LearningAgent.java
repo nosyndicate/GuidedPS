@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sim.app.guidedps.taxi.agents;
+package sim.app.guidedps.agents;
 
 import sim.app.guidedps.gridworld.State;
 

@@ -6,17 +6,14 @@
 package sim.app.guidedps.maze;
 
 import java.awt.Color;
-import java.awt.Point;
 
+import sim.app.guidedps.agents.GuidedPS;
+import sim.app.guidedps.agents.LearningAgent;
+import sim.app.guidedps.agents.PrioritizedSweeping;
 import sim.app.guidedps.gridworld.Block;
 import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.GridObject;
 import sim.app.guidedps.gridworld.State;
-import sim.app.guidedps.taxi.World;
-import sim.app.guidedps.taxi.agents.GuidedPS;
-import sim.app.guidedps.taxi.agents.LearningAgent;
-import sim.app.guidedps.taxi.agents.PrioritizedSweeping;
-import sim.app.guidedps.taxi.agents.QAgent;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.ObjectGrid2D;
 import sim.field.grid.SparseGrid2D;

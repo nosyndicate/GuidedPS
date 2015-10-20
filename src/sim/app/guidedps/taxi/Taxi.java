@@ -1,5 +1,6 @@
 package sim.app.guidedps.taxi;
 
+import sim.app.guidedps.agents.GuidedPS;
 import sim.app.guidedps.gridworld.State;
 import sim.app.guidedps.gridworld.Block;
 
@@ -8,8 +9,6 @@ import java.awt.Point;
 
 import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.GridObject;
-import sim.app.guidedps.taxi.agents.GuidedPS;
-import sim.app.guidedps.taxi.agents.PrioritizedSweeping;
 import sim.field.grid.ObjectGrid2D;
 import sim.field.grid.SparseGrid2D;
 

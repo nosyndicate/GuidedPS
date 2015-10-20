@@ -1,6 +1,8 @@
-package sim.app.guidedps.taxi.agents;
+package sim.app.guidedps.agents;
 
 import java.util.HashMap;
+
+import javax.swing.tree.ExpandVetoException;
 
 import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.State.Action;
@@ -20,13 +22,13 @@ public class GuidedPS extends LearningAgent {
 	private int[][][] sASCounter;
 	private int numAction;
 	private int numState;
-	private double gamma = 0.9;
+	private double gamma = 1;
 	private double tau = 0.9;
 	private double epsilon = 0.1;
 	private double theta = Double.MIN_VALUE; // threshold for putting tuple into
 												// the queue
 	private State s;
-	private int p = 3;
+	private int p = 8;
 	private GridModel model;
 	private double reward;
 	private Action action;
@@ -45,9 +47,10 @@ public class GuidedPS extends LearningAgent {
 		// demonstrationMap.put(new Demonstration(new State(0, 0, 3, 0), 4), 1.0); //pick at the red spot
 	
 		// maze demonstration
-		demonstrationMap.put(new Demonstration(new State(19, 16, 0, 0), 2), 1.0); //pick at the red spot
-		//demonstrationMap.put(new Demonstration(new State(7, 9, 0, 0), 1), 1.0); //pick at the red spot
-		//demonstrationMap.put(new Demonstration(new State(3, 13, 0, 0), 1), 1.0); //pick at the red spot
+		demonstrationMap.put(new Demonstration(new State(19, 16, 0, 0), 2), 1.0); //go north
+		demonstrationMap.put(new Demonstration(new State(7, 9, 0, 0), 1), 1.0); //go east
+		demonstrationMap.put(new Demonstration(new State(3, 13, 0, 0), 1), 1.0); //go east
+		demonstrationMap.put(new Demonstration(new State(11, 13, 0, 0), 1), 1.0); //go east
 	}
 
 	private void initialization() {
@@ -95,10 +98,10 @@ public class GuidedPS extends LearningAgent {
 				signalForwardup(stateIndex, actionIndex, sprimeIndex,
 						signalStrength);
 				counter = 0;
-				/*while (counter < p && !signalQueue.isEmpty()) {
+				while (counter < p && !signalQueue.isEmpty()) {
 					this.forwardSweeping();
 					counter++;
-				}*/
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -130,7 +133,7 @@ public class GuidedPS extends LearningAgent {
 					if (sASCounter[i][j][sprime] > 0) {
 						double value = tau * sASCounter[i][j][sprime] / stateActionCounter[i][j] * signalValue[s];
 						if (i == s && j == a) {
-							value += signalStrength;
+							value = signalStrength;
 						}
 						max = Math.max(max, value);
 					}
@@ -144,8 +147,8 @@ public class GuidedPS extends LearningAgent {
 			double delta = Math.abs(signalValue[sprime] - oldSignalValue);
 			//System.out.println("h value for sprime is "+signalValue[sprime]+", amplify value is "+getAmplification(sprime));
 			
-			//if (delta > theta)
-			//	signalQueue.relax(new PriorityTuple(sprime, delta), delta);
+			if (delta > theta)
+				signalQueue.relax(new PriorityTuple(sprime, delta), delta);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -194,8 +197,9 @@ public class GuidedPS extends LearningAgent {
 	}
 
 	private double getAmplification(int s) {
-		double v = Math.exp(-signalValue[s]*2) + 1;
-		return 2 / v;
+		//double v = Math.exp(-signalValue[s]*2) + 1;
+		//return 2 / v;
+		return Math.exp(signalValue[s]*2);
 	}
 
 	private void prioritizedSweeping() {
