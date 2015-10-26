@@ -1,5 +1,7 @@
 package sim.app.guidedps.agents;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.tree.ExpandVetoException;
@@ -25,6 +27,7 @@ public class GuidedPS extends LearningAgent {
 	private double gamma = 1;
 	private double tau = 0.9;
 	private double epsilon = 0.1;
+	private double initQ = -100;
 	private double theta = Double.MIN_VALUE; // threshold for putting tuple into
 												// the queue
 	private State s;
@@ -35,37 +38,52 @@ public class GuidedPS extends LearningAgent {
 
 	public GuidedPS(GridModel model) {
 		this.model = model;
+		this.sweepStates = new ArrayList<PriorityTuple>();
 		initializaDemonstration();
 		initialization();
 	}
 
 	private void initializaDemonstration() {
 		// add demonstration here
-		// demonstrationMap.put(new Demonstration(new State(x, y, d, p), a), value);
-		
+		// demonstrationMap.put(new Demonstration(new State(x, y, d, p), a),
+		// value);
+
 		// taxi demonstration
-		// demonstrationMap.put(new Demonstration(new State(0, 0, 3, 0), 4), 1.0); //pick at the red spot
-	
+		// demonstrationMap.put(new Demonstration(new State(0, 0, 3, 0), 4),
+		// 1.0); //pick at the red spot
+
 		// maze demonstration
-		demonstrationMap.put(new Demonstration(new State(19, 16, 0, 0), 2), 1.0); //go north
-		demonstrationMap.put(new Demonstration(new State(7, 9, 0, 0), 1), 1.0); //go east
-		demonstrationMap.put(new Demonstration(new State(3, 13, 0, 0), 1), 1.0); //go east
-		demonstrationMap.put(new Demonstration(new State(11, 13, 0, 0), 1), 1.0); //go east
+		demonstrationMap
+				.put(new Demonstration(new State(19, 16, 0, 0), 2), 1.0); // go
+																			// north
+		demonstrationMap.put(new Demonstration(new State(7, 9, 0, 0), 1), 1.0); // go
+																				// east
+		demonstrationMap.put(new Demonstration(new State(3, 13, 0, 0), 1), 1.0); // go
+																					// east
+		demonstrationMap
+				.put(new Demonstration(new State(11, 13, 0, 0), 1), 1.0); // go
+																			// east
 	}
 
 	private void initialization() {
 		this.numState = model.getNumState();
 		this.numAction = model.getNumAction();
-		// N(s,a), we have a terminal state 
-		stateActionCounter = new int[numState + 1][numAction]; 
+		// N(s,a), we have a terminal state
+		stateActionCounter = new int[numState + 1][numAction];
 		// N(s,a,s')
 		sASCounter = new int[numState + 1][numAction][numState + 1];
 		// R(s,a)
 		rewardSum = new double[numState + 1][numAction];
 		// Q(s,a)
 		qValue = new double[numState + 1][numAction];
+		for (int i = 0; i < qValue.length; ++i) {
+			Arrays.fill(qValue[i], initQ);
+		}
+		Arrays.fill(qValue[numState], 0); // terminal state always 0
 		// V(s)
 		stateValue = new double[numState + 1];
+		Arrays.fill(stateValue, initQ);
+		stateValue[numState] = 0;
 		// H(s)
 		signalValue = new double[numState + 1];
 	}
@@ -93,8 +111,9 @@ public class GuidedPS extends LearningAgent {
 					counter++;
 				}
 
-				//System.out.println("start signal sweeping");
-				double signalStrength = getSignalStrength(stateIndex,actionIndex);
+				// System.out.println("start signal sweeping");
+				double signalStrength = getSignalStrength(stateIndex,
+						actionIndex);
 				signalForwardup(stateIndex, actionIndex, sprimeIndex,
 						signalStrength);
 				counter = 0;
@@ -120,7 +139,7 @@ public class GuidedPS extends LearningAgent {
 	private double getSignalStrength(int s, int a) {
 		State state = model.stateList.get(s); // get the real state
 		Demonstration d = new Demonstration(state, a);
-		if(demonstrationMap.containsKey(d))
+		if (demonstrationMap.containsKey(d))
 			return demonstrationMap.get(d);
 		return 0;
 	}
@@ -131,7 +150,8 @@ public class GuidedPS extends LearningAgent {
 			for (int i = 0; i < numState + 1; ++i) {
 				for (int j = 0; j < numAction; ++j) {
 					if (sASCounter[i][j][sprime] > 0) {
-						double value = tau * sASCounter[i][j][sprime] / stateActionCounter[i][j] * signalValue[s];
+						double value = tau * sASCounter[i][j][sprime]
+								/ stateActionCounter[i][j] * signalValue[i];
 						if (i == s && j == a) {
 							value = signalStrength;
 						}
@@ -141,12 +161,12 @@ public class GuidedPS extends LearningAgent {
 			}
 
 			double oldSignalValue = signalValue[sprime];
-			if(signalValue[sprime] < max)
+			if (signalValue[sprime] < max)
 				signalValue[sprime] = max;
-			
+
 			double delta = Math.abs(signalValue[sprime] - oldSignalValue);
-			//System.out.println("h value for sprime is "+signalValue[sprime]+", amplify value is "+getAmplification(sprime));
-			
+			// System.out.println("h value for sprime is "+signalValue[sprime]+", amplify value is "+getAmplification(sprime));
+
 			if (delta > theta)
 				signalQueue.relax(new PriorityTuple(sprime, delta), delta);
 
@@ -197,9 +217,9 @@ public class GuidedPS extends LearningAgent {
 	}
 
 	private double getAmplification(int s) {
-		//double v = Math.exp(-signalValue[s]*2) + 1;
-		//return 2 / v;
-		return Math.exp(signalValue[s]*2);
+		// double v = Math.exp(-signalValue[s]*2) + 1;
+		// return 2 / v;
+		return Math.exp(signalValue[s] * 2);
 	}
 
 	private void prioritizedSweeping() {
@@ -218,6 +238,8 @@ public class GuidedPS extends LearningAgent {
 
 	private int firstOfQueue() {
 		PriorityTuple tuple = queue.poll();
+		sweepStates.add(tuple);
+		
 		return tuple.stateIndex;
 	}
 

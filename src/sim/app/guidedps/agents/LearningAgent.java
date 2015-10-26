@@ -5,6 +5,8 @@
  */
 package sim.app.guidedps.agents;
 
+import java.util.ArrayList;
+
 import sim.app.guidedps.gridworld.State;
 
 /**
@@ -17,4 +19,5 @@ public abstract class LearningAgent {
     public abstract void updatePolicy();
 	public double[] stateValue;
 	public double[] signalValue;
+	public ArrayList<PriorityTuple> sweepStates;
 }

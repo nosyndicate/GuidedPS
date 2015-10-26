@@ -6,13 +6,17 @@
 package sim.app.guidedps.maze;
 
 import java.awt.Color;
+
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import sim.app.guidedps.gridworld.BlockPortrayal;
 import sim.display.Console;
 import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
+import sim.engine.Steppable;
 import sim.portrayal.Inspector;
 import sim.portrayal.SimpleInspector;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
@@ -34,6 +38,7 @@ public class MazeWithUI extends GUIState {
 	private ObjectGridPortrayal2D backgroundPortrayal;
 	private FastValueGridPortrayal2D stateValuePortrayal;
 	private FastValueGridPortrayal2D signalValuePortrayal;
+	private FastValueGridPortrayal2D sweepPortrayal;
 	private Display2D display;
 
 	public MazeWithUI() {
@@ -48,6 +53,22 @@ public class MazeWithUI extends GUIState {
 	public void start() {
 		super.start();
 		setupObjectPortrayals();
+
+		scheduleRepeatingImmediatelyAfter(new Steppable() {
+			public void step(SimState state) {
+				Maze maze = (Maze) state;
+				if (maze.pause) {
+					if(maze.usingPauseForGUI) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								((Console) controller).pressPause();
+							}
+						});
+					}
+					maze.pause = false;
+				}
+			}
+		});
 
 		display.reset();
 		display.setBackdrop(Color.white);
@@ -98,25 +119,36 @@ public class MazeWithUI extends GUIState {
 		backgroundPortrayal = getBackgroundPortrayal();
 		stateValuePortrayal = getStateValuePortrayal();
 		signalValuePortrayal = getSignalValuePortrayal();
-		//signalValuePortrayal = getSignalValuePortrayal();
+		sweepPortrayal = getSweepPortrayal();
 		display.attach(backgroundPortrayal, "Background");
 		display.attach(mazeFieldPortrayal, "Agent");
 		display.attach(stateValuePortrayal, "State Value");
 		display.attach(signalValuePortrayal, "Demonstration Signal");
+		display.attach(sweepPortrayal, "Sweep Cell");
 
 	}
 
 	private FastValueGridPortrayal2D getSignalValuePortrayal() {
 		FastValueGridPortrayal2D portrayal = new FastValueGridPortrayal2D();
 		portrayal.setField(model.signalGrid);
-		portrayal.setMap(new SimpleColorMap(0, 1.0, new Color(0,0,0,0),Color.GREEN));
+		portrayal.setMap(new SimpleColorMap(0, 1.0, new Color(0, 0, 0, 0),
+				Color.GREEN));
 		return portrayal;
 	}
 
 	private FastValueGridPortrayal2D getStateValuePortrayal() {
 		FastValueGridPortrayal2D portrayal = new FastValueGridPortrayal2D();
 		portrayal.setField(model.stateValueGrid);
-		portrayal.setMap(new SimpleColorMap(-70, 0, Color.red, new Color(0,0,0,0)));
+		portrayal.setMap(new SimpleColorMap(-150, 0, Color.red, new Color(0, 0,
+				0, 0)));
+		return portrayal;
+	}
+
+	private FastValueGridPortrayal2D getSweepPortrayal() {
+		FastValueGridPortrayal2D portrayal = new FastValueGridPortrayal2D();
+		portrayal.setField(model.sweepGrid);
+		portrayal.setMap(new SimpleColorMap(0, 4, new Color(0, 0, 0, 0),
+				Color.cyan));
 		return portrayal;
 	}
 

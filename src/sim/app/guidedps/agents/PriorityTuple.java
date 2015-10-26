@@ -3,8 +3,8 @@ package sim.app.guidedps.agents;
 
 
 public class PriorityTuple implements Comparable{
-	int stateIndex;
-	double priority;
+	public int stateIndex;
+	public double priority;
 	
 	public PriorityTuple(int state, double priority)
 	{

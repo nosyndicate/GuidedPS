@@ -75,6 +75,7 @@ public abstract class GridAgent implements Steppable {
 		{
 			((Maze)model).updateValueGrid();
 			((Maze)model).updateSignalGrid();
+			((Maze)model).updateSweepGrid();
 		}
 
 	}

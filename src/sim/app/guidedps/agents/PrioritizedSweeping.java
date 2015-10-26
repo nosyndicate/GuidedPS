@@ -1,5 +1,8 @@
 package sim.app.guidedps.agents;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import sim.app.guidedps.gridworld.GridModel;
 import sim.app.guidedps.gridworld.State.Action;
 import sim.app.guidedps.gridworld.State;
@@ -18,8 +21,9 @@ public class PrioritizedSweeping extends LearningAgent {
 	private int numAction;
 	private int numState;
 	private double gamma = 1;
+	private double initQ = -100;
 	private double epsilon = 0.1;
-	private double theta = 0.05; // threshold for putting tuple into the queue
+	private double theta = Double.MIN_VALUE; // threshold for putting tuple into the queue
 	private State s;
 	private int p = 3;
         private GridModel model;
@@ -28,6 +32,7 @@ public class PrioritizedSweeping extends LearningAgent {
 
 	public PrioritizedSweeping(GridModel model) {
 		this.model = model;
+		this.sweepStates = new ArrayList<PriorityTuple>();
 		initialization();
 	}
 
@@ -44,6 +49,7 @@ public class PrioritizedSweeping extends LearningAgent {
 		
 		int actionIndex = action.ordinal();
 		
+		sweepStates.clear();
 		
 		// only update the Q value in training mode
 		if(model.isTraining())
@@ -55,7 +61,7 @@ public class PrioritizedSweeping extends LearningAgent {
 				int counter = 0;
 				while(counter<p&&!queue.isEmpty())
 				{
-					this.prioritizedSweeping();
+					prioritizedSweeping();
 					counter++;
 				}
 			} catch (Exception e) {
@@ -97,9 +103,15 @@ public class PrioritizedSweeping extends LearningAgent {
 		// R(s,a)
 		rewardSum = new double[numState+1][numAction];
 		// Q(s,a)
-		qValue = new double[numState+1][numAction];
+		qValue = new double[numState + 1][numAction];
+		for(int i = 0;i<qValue.length;++i) {
+			Arrays.fill(qValue[i], initQ);
+		}
+		Arrays.fill(qValue[numState], 0);  // terminal state always 0
 		// V(s)
-		stateValue = new double[numState+1];
+		stateValue = new double[numState + 1];
+		Arrays.fill(stateValue, initQ);
+		stateValue[numState] = 0;
 		// signal value, not use in prioritized sweeping
 		signalValue = new double[numState+1];
 	}
@@ -133,7 +145,7 @@ public class PrioritizedSweeping extends LearningAgent {
 	}
 	
 	
-	private void prioritizedSweeping() {
+	private int prioritizedSweeping() {
 		int s = firstOfQueue();
 		
 		for(int i = 0;i<numState+1;++i) {
@@ -144,11 +156,14 @@ public class PrioritizedSweeping extends LearningAgent {
 				}
 			}
 		}
+		return s;
 	}
 	
 	
 	private int firstOfQueue() {
 		PriorityTuple tuple = queue.poll();
+		sweepStates.add(tuple);
+		
 		return tuple.stateIndex;
 	}
 

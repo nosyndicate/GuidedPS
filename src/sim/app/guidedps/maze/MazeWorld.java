@@ -76,7 +76,10 @@ public class MazeWorld extends Environment {
 		
 		Point newLocPoint = model.agent.getLocation();
 		if(newLocPoint.x==25&&newLocPoint.y==22)
+		{
 			endGame = true;
+			model.pause = true;
+		}
 		
 		return -1;
 
