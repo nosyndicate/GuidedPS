@@ -152,4 +152,5 @@ sympy-plots-for-*.tex/
 .classpath
 .project
 .settings/
+bin/
 *.pdf
